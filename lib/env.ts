@@ -2,7 +2,11 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import * as z from "zod";
 
 export const env = createEnv({
-  server: {},
+  server: {
+    FIREBASE_PROJECT_ID: z.string().min(1),
+    FIREBASE_CLIENT_EMAIL: z.string().min(1),
+    FIREBASE_PRIVATE_KEY: z.string().min(1),
+  },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.url(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
