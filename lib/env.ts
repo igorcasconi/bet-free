@@ -6,6 +6,10 @@ export const env = createEnv({
     FIREBASE_PROJECT_ID: z.string().min(1),
     FIREBASE_CLIENT_EMAIL: z.string().min(1),
     FIREBASE_PRIVATE_KEY: z.string().min(1),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+    SPORTS_PROVIDER_API_KEY: z.string().min(1),
+    SPORTS_PROVIDER_LEAGUE_IDS: z.string().min(1),
+    SYNC_SECRET: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.url(),
