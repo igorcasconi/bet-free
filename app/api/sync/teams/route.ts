@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { syncTeams } from "@/features/sports-sync";
+import {
+  matchSyncService,
+  SyncAlreadyRunningError,
+} from "@/features/sports-sync";
 import { env } from "@/lib/env";
 import { isValidSyncSecret } from "@/lib/sync-auth";
 
@@ -12,9 +15,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await syncTeams();
+    const result = await matchSyncService.syncTeams();
     return NextResponse.json(result, { status: 200 });
-  } catch {
+  } catch (error) {
+    if (error instanceof SyncAlreadyRunningError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });
   }
 }

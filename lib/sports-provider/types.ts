@@ -37,6 +37,9 @@ export interface SportsProvider {
     season: string,
   ): Promise<ProviderMatch[]>;
   updateLiveMatches(): Promise<ProviderMatch[]>;
+  updateFinishedMatches(
+    externalCompetitionId: string,
+  ): Promise<ProviderMatch[]>;
 }
 
 export class SportsProviderError extends Error {

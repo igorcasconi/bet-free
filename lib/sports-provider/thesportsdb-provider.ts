@@ -232,4 +232,31 @@ export class TheSportsDBProvider implements SportsProvider {
       awayScore: toProviderNumber(event.intAwayScore),
     }));
   }
+
+  async updateFinishedMatches(
+    externalCompetitionId: string,
+  ): Promise<ProviderMatch[]> {
+    const json = await fetchJson(
+      `${this.baseUrl}/eventspastleague.php?id=${encodeURIComponent(externalCompetitionId)}`,
+    );
+    const parsed = eventsResponseSchema.safeParse(json);
+    if (!parsed.success) {
+      throw new SportsProviderError(
+        "Unexpected eventspastleague.php response shape",
+        parsed.error,
+      );
+    }
+
+    return (parsed.data.events ?? []).map((event) => ({
+      externalId: event.idEvent,
+      externalCompetitionId: event.idLeague,
+      externalHomeTeamId: event.idHomeTeam,
+      externalAwayTeamId: event.idAwayTeam,
+      matchDate: toISODateTime(event.dateEvent, event.strTime),
+      round: event.intRound,
+      status: mapStatus(event.strStatus),
+      homeScore: toProviderNumber(event.intHomeScore),
+      awayScore: toProviderNumber(event.intAwayScore),
+    }));
+  }
 }

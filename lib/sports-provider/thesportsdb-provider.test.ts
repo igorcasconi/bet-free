@@ -157,6 +157,61 @@ describe("updateLiveMatches", () => {
   });
 });
 
+describe("updateFinishedMatches", () => {
+  it("returns normalized ProviderMatch[] for a competition's past events", async () => {
+    mockFetchJson({
+      events: [
+        {
+          idEvent: "441615",
+          idLeague: "4328",
+          idHomeTeam: "133602",
+          idAwayTeam: "133604",
+          dateEvent: "2024-01-30",
+          strTime: "15:00:00",
+          strStatus: "Match Finished",
+          intRound: "24",
+          intHomeScore: "2",
+          intAwayScore: "1",
+        },
+      ],
+    });
+
+    const result = await makeProvider().updateFinishedMatches("4328");
+
+    expect(result).toEqual([
+      {
+        externalId: "441615",
+        externalCompetitionId: "4328",
+        externalHomeTeamId: "133602",
+        externalAwayTeamId: "133604",
+        matchDate: "2024-01-30T15:00:00.000Z",
+        round: "24",
+        status: "finished",
+        homeScore: 2,
+        awayScore: 1,
+      },
+    ]);
+  });
+
+  it("throws SportsProviderError when the response shape fails Zod validation", async () => {
+    mockFetchJson({ unexpected: "shape" });
+
+    await expect(makeProvider().updateFinishedMatches("4328")).rejects.toThrow(
+      SportsProviderError,
+    );
+  });
+
+  it("throws SportsProviderError immediately on network failure, without retry", async () => {
+    const fetchMock = vi.fn().mockRejectedValue(new Error("network down"));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(makeProvider().updateFinishedMatches("4328")).rejects.toThrow(
+      SportsProviderError,
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("status mapping", () => {
   it.each([
     ["Not Started", "scheduled"],

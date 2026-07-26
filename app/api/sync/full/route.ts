@@ -15,8 +15,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await matchSyncService.updateLiveMatches();
-    return NextResponse.json(result, { status: 200 });
+    await matchSyncService.runFullSync();
+    return NextResponse.json({}, { status: 200 });
   } catch (error) {
     if (error instanceof SyncAlreadyRunningError) {
       return NextResponse.json({ error: error.message }, { status: 409 });

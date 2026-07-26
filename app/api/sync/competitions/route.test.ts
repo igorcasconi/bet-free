@@ -1,11 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const { syncCompetitionsMock } = vi.hoisted(() => ({
+const { syncCompetitionsMock, SyncAlreadyRunningError } = vi.hoisted(() => ({
   syncCompetitionsMock: vi.fn(),
+  SyncAlreadyRunningError: class SyncAlreadyRunningError extends Error {},
 }));
 
 vi.mock("@/features/sports-sync", () => ({
-  syncCompetitions: syncCompetitionsMock,
+  matchSyncService: { syncCompetitions: syncCompetitionsMock },
+  SyncAlreadyRunningError,
 }));
 
 vi.mock("@/lib/env", () => ({
@@ -55,5 +57,17 @@ describe("POST /api/sync/competitions", () => {
     expect(response.status).toBe(500);
     const body = (await response.json()) as { error: string };
     expect(body.error).not.toContain("provider down");
+  });
+
+  it("returns 409 when a sync is already running", async () => {
+    syncCompetitionsMock.mockRejectedValue(
+      new SyncAlreadyRunningError("already running"),
+    );
+
+    const response = await POST(
+      makeRequest({ "x-sync-secret": "test-secret" }),
+    );
+
+    expect(response.status).toBe(409);
   });
 });
