@@ -22,7 +22,7 @@ vi.mock("@/lib/supabase/admin", () => ({
   supabaseAdmin: {},
 }));
 
-const { POST } = await import("./route");
+const { POST } = await import("@/app/api/sync/full/route");
 
 afterEach(() => {
   vi.clearAllMocks();

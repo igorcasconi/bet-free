@@ -14,7 +14,7 @@ vi.mock("@/lib/env", () => ({
   env: { SYNC_SECRET: "test-secret" },
 }));
 
-const { POST } = await import("./route");
+const { POST } = await import("@/app/api/sync/live/route");
 
 afterEach(() => {
   vi.clearAllMocks();
