@@ -1,0 +1,45 @@
+name: Live/Finished Match Sync
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  group: live-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate APP_BASE_URL is HTTPS
+        run: |
+          case "${{ secrets.APP_BASE_URL }}" in
+            https://*) ;;
+            *) echo "APP_BASE_URL must start with https://" >&2; exit 1 ;;
+          esac
+
+      - name: Update live matches
+        run: |
+          curl -f --max-time 60 --retry 2 --retry-delay 5 \
+            -X POST "${{ secrets.APP_BASE_URL }}/api/sync/live" \
+            -H "x-sync-secret: ${{ secrets.SYNC_SECRET }}"
+
+      - name: Update finished matches
+        run: |
+          curl -f --max-time 60 --retry 2 --retry-delay 5 \
+            -X POST "${{ secrets.APP_BASE_URL }}/api/sync/finished" \
+            -H "x-sync-secret: ${{ secrets.SYNC_SECRET }}"
+
+      # TODO: no prediction-processing route/service exists yet (only the
+      # `predictions` table in the schema). Wire this up once that feature
+      # is designed — see .specs/features/github-actions-sync/context.md.
+      # - name: Trigger prediction processing
+      #   run: |
+      #     curl -f --max-time 60 --retry 2 --retry-delay 5 \
+      #       -X POST "${{ secrets.APP_BASE_URL }}/api/predictions/process" \
+      #       -H "x-sync-secret: ${{ secrets.SYNC_SECRET }}"
