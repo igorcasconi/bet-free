@@ -1,7 +1,12 @@
 import path from "node:path";
 
 import { loadEnv } from "vite";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
+
+const JSDOM_GLOBS = [
+  "tests/features/dashboard/components/**",
+  "tests/features/navigation/**",
+];
 
 export default defineConfig({
   resolve: {
@@ -10,8 +15,28 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "node",
     passWithNoTests: true,
     env: loadEnv("", process.cwd(), ""),
+    // NOTE: `environmentMatchGlobs` was removed in Vitest 4 (installed: 4.1.10).
+    // `test.projects` with per-project `environment` is the current equivalent.
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "node",
+          environment: "node",
+          exclude: [...configDefaults.exclude, ...JSDOM_GLOBS],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "jsdom",
+          environment: "jsdom",
+          include: JSDOM_GLOBS,
+          setupFiles: ["./vitest.setup.ts"],
+        },
+      },
+    ],
   },
 });

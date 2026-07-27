@@ -22,7 +22,7 @@ export function useEmailPasswordMutation(
       await syncSession(idToken);
     },
     onSuccess: () => {
-      router.push(redirectTo ?? "/");
+      router.push(redirectTo ?? "/home");
     },
     onError: (error) => {
       toast.error(mapFirebaseError(error));

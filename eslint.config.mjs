@@ -32,7 +32,10 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["features/sports-sync/services/**/*.ts"],
+    files: [
+      "features/sports-sync/services/**/*.ts",
+      "features/dashboard/services/**/*.ts",
+    ],
     rules: {
       "no-restricted-imports": "off",
     },

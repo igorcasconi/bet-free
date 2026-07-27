@@ -29,7 +29,7 @@ export function useLoginWithGoogle(redirectTo?: string) {
 
       const idToken = await credential.user.getIdToken();
       await syncSession(idToken);
-      router.push(redirectTo ?? "/");
+      router.push(redirectTo ?? "/home");
     } catch (error) {
       toast.error(mapFirebaseError(error));
     }

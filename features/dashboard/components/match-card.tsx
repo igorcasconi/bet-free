@@ -1,0 +1,51 @@
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import type { DashboardMatch } from "@/features/dashboard/types";
+
+interface MatchCardProps {
+  match: DashboardMatch;
+}
+
+function formatMatchTime(matchDate: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(matchDate));
+}
+
+export function MatchCard({ match }: MatchCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <Badge variant="secondary">{match.competitionName}</Badge>
+          <span className="text-muted-foreground text-sm">
+            {formatMatchTime(match.matchDate)}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col items-center gap-1">
+            <Avatar>
+              <AvatarFallback>{match.homeTeamShort}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm">{match.homeTeamName}</span>
+          </div>
+          <span className="text-muted-foreground text-sm">vs</span>
+          <div className="flex flex-col items-center gap-1">
+            <Avatar>
+              <AvatarFallback>{match.awayTeamShort}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm">{match.awayTeamName}</span>
+          </div>
+        </div>
+        <Button className="w-full" disabled>
+          Make Prediction
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
