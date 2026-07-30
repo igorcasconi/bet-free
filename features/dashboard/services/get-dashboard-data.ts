@@ -4,10 +4,8 @@ import type {
   DashboardMatch,
   DashboardPrediction,
 } from "@/features/dashboard/types";
+import { XP_THRESHOLD, levelForXp, xpInLevelForXp } from "@/lib/gamification";
 
-// Level/XP use a fixed threshold instead of the stored `users.level` column
-// — keeps the progression rule in one place and in sync with `xp`.
-const XP_THRESHOLD = 3000;
 const LATEST_PREDICTIONS_LIMIT = 5;
 
 const MATCH_SELECT =
@@ -186,8 +184,8 @@ export async function getDashboardData(
     stats: {
       moneySaved: Number(user.money_saved),
       currentStreak: user.current_streak,
-      level: Math.floor(user.xp / XP_THRESHOLD) + 1,
-      xpInLevel: user.xp % XP_THRESHOLD,
+      level: levelForXp(user.xp),
+      xpInLevel: xpInLevelForXp(user.xp),
       xpToNextLevel: XP_THRESHOLD,
       accuracyPercent,
     },

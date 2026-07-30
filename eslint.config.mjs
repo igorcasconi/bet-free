@@ -36,6 +36,7 @@ const eslintConfig = defineConfig([
       "features/sports-sync/services/**/*.ts",
       "features/dashboard/services/**/*.ts",
       "features/matches/services/**/*.ts",
+      "features/prediction-processing/services/**/*.ts",
     ],
     rules: {
       "no-restricted-imports": "off",

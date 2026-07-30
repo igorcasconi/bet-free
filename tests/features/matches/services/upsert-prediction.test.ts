@@ -90,6 +90,41 @@ describe("upsertPrediction", () => {
     expect(result).toEqual({ ok: true });
   });
 
+  it("does not send wagered_amount when it is absent from the input", async () => {
+    const { upsertMock } = setupTables({});
+
+    await upsertPrediction(INPUT);
+
+    expect(upsertMock).toHaveBeenCalledWith(
+      {
+        user_id: "user-1",
+        match_id: "match-1",
+        predicted_home_score: 2,
+        predicted_away_score: 1,
+      },
+      { onConflict: "user_id,match_id" },
+    );
+    expect(upsertMock.mock.calls[0][0]).not.toHaveProperty("wagered_amount");
+  });
+
+  it("persists wagered_amount when provided", async () => {
+    const { upsertMock } = setupTables({});
+
+    const result = await upsertPrediction({ ...INPUT, wageredAmount: 25.5 });
+
+    expect(result).toEqual({ ok: true });
+    expect(upsertMock).toHaveBeenCalledWith(
+      {
+        user_id: "user-1",
+        match_id: "match-1",
+        predicted_home_score: 2,
+        predicted_away_score: 1,
+        wagered_amount: 25.5,
+      },
+      { onConflict: "user_id,match_id" },
+    );
+  });
+
   it("rejects without writing when the match is not scheduled", async () => {
     const { upsertMock } = setupTables({
       match: { data: { status: "finished" }, error: null },

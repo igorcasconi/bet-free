@@ -1,0 +1,31 @@
+import { NextResponse } from "next/server";
+
+import { processPendingPredictions } from "@/features/prediction-processing";
+import { SyncAlreadyRunningError, withSyncLock } from "@/features/sports-sync";
+import { env } from "@/lib/env";
+import { isValidSyncSecret } from "@/lib/sync-auth";
+
+export async function POST(request: Request) {
+  if (
+    !isValidSyncSecret(request.headers.get("x-sync-secret"), env.SYNC_SECRET)
+  ) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const result = await withSyncLock("predictions", () =>
+      processPendingPredictions(),
+    );
+    return NextResponse.json(result, { status: 200 });
+  } catch (error) {
+    if (error instanceof SyncAlreadyRunningError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    return NextResponse.json(
+      { error: "Prediction processing failed" },
+      {
+        status: 500,
+      },
+    );
+  }
+}

@@ -15,6 +15,7 @@ const submitPredictionSchema = z.object({
   matchId: z.string().uuid(),
   predictedHomeScore: z.number().int().min(0).max(MAX_SCORE),
   predictedAwayScore: z.number().int().min(0).max(MAX_SCORE),
+  wageredAmount: z.number().positive().optional(),
 });
 
 export type SubmitPredictionInput = z.infer<typeof submitPredictionSchema>;
@@ -42,5 +43,6 @@ export async function submitPrediction(
     matchId: parsed.data.matchId,
     predictedHomeScore: parsed.data.predictedHomeScore,
     predictedAwayScore: parsed.data.predictedAwayScore,
+    wageredAmount: parsed.data.wageredAmount,
   });
 }

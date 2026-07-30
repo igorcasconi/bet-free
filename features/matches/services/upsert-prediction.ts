@@ -5,6 +5,7 @@ export interface UpsertPredictionInput {
   matchId: string;
   predictedHomeScore: number;
   predictedAwayScore: number;
+  wageredAmount?: number;
 }
 
 export type UpsertPredictionResult =
@@ -31,6 +32,9 @@ export async function upsertPrediction(
       match_id: input.matchId,
       predicted_home_score: input.predictedHomeScore,
       predicted_away_score: input.predictedAwayScore,
+      ...(input.wageredAmount !== undefined && {
+        wagered_amount: input.wageredAmount,
+      }),
     },
     { onConflict: "user_id,match_id" },
   );

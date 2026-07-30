@@ -82,6 +82,32 @@ describe("submitPrediction", () => {
       matchId: "11111111-1111-4111-8111-111111111111",
       predictedHomeScore: 2,
       predictedAwayScore: 1,
+      wageredAmount: undefined,
+    });
+  });
+
+  it("rejects a wageredAmount <= 0 before checking auth or calling the service", async () => {
+    const result = await submitPrediction({ ...INPUT, wageredAmount: 0 });
+
+    expect(result).toEqual({ ok: false, error: "invalid input" });
+    expect(getCurrentFirebaseUidMock).not.toHaveBeenCalled();
+    expect(upsertPredictionMock).not.toHaveBeenCalled();
+  });
+
+  it("passes a valid wageredAmount through to upsertPrediction", async () => {
+    getCurrentFirebaseUidMock.mockResolvedValue("firebase-1");
+    resolveUserIdMock.mockResolvedValue("user-1");
+    upsertPredictionMock.mockResolvedValue({ ok: true });
+
+    const result = await submitPrediction({ ...INPUT, wageredAmount: 25.5 });
+
+    expect(result).toEqual({ ok: true });
+    expect(upsertPredictionMock).toHaveBeenCalledWith({
+      userId: "user-1",
+      matchId: "11111111-1111-4111-8111-111111111111",
+      predictedHomeScore: 2,
+      predictedAwayScore: 1,
+      wageredAmount: 25.5,
     });
   });
 
