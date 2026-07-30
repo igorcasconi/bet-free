@@ -5,3 +5,4 @@ export * from "./components/stat-card";
 export * from "./components/xp-progress-card";
 export * from "./components/match-list-section";
 export * from "./components/latest-predictions-section";
+export * from "./components/prediction-results-tracker";

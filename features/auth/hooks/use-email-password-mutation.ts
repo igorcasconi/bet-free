@@ -8,6 +8,7 @@ import type { UserCredential } from "firebase/auth";
 import { mapFirebaseError } from "@/features/auth/services/auth-service";
 import { syncSession } from "@/features/auth/actions/session-actions";
 import type { EmailPasswordCredentials } from "@/features/auth/types";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 export function useEmailPasswordMutation(
   authFn: (email: string, password: string) => Promise<UserCredential>,
@@ -22,6 +23,7 @@ export function useEmailPasswordMutation(
       await syncSession(idToken);
     },
     onSuccess: () => {
+      trackEvent("login");
       router.push(redirectTo ?? "/home");
     },
     onError: (error) => {

@@ -22,12 +22,14 @@ describe("LatestPredictionsSection", () => {
         matchLabel: "Flamengo vs Palmeiras",
         predictedScore: "2-1",
         createdAt: "2026-07-20",
+        pointsEarned: null,
       },
       {
         id: "2",
         matchLabel: "Corinthians vs Santos",
         predictedScore: "0-0",
         createdAt: "2026-07-21",
+        pointsEarned: null,
       },
     ];
 

@@ -4,6 +4,7 @@ import { getCurrentFirebaseUid } from "@/lib/auth/get-current-user";
 import {
   LatestPredictionsSection,
   MoneyPreservedCard,
+  PredictionResultsTracker,
   StatCard,
   XpProgressCard,
 } from "@/features/dashboard";
@@ -54,6 +55,7 @@ export default async function ProfilePage() {
       <AchievementsSection achievements={achievements} />
 
       <LatestPredictionsSection predictions={latestPredictions} />
+      <PredictionResultsTracker predictions={latestPredictions} />
     </div>
   );
 }

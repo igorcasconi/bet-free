@@ -237,9 +237,32 @@ describe("getDashboardData", () => {
             predicted_home_score: 2,
             predicted_away_score: 1,
             created_at: "2026-07-25T12:00:00.000Z",
+            points_earned: 1,
             matches: {
               home_team: { name: "Flamengo" },
               away_team: { name: "Palmeiras" },
+            },
+          },
+          {
+            id: "pred-2",
+            predicted_home_score: 0,
+            predicted_away_score: 3,
+            created_at: "2026-07-24T12:00:00.000Z",
+            points_earned: 0,
+            matches: {
+              home_team: { name: "Corinthians" },
+              away_team: { name: "Santos" },
+            },
+          },
+          {
+            id: "pred-3",
+            predicted_home_score: 1,
+            predicted_away_score: 1,
+            created_at: "2026-07-23T12:00:00.000Z",
+            points_earned: null,
+            matches: {
+              home_team: { name: "Grêmio" },
+              away_team: { name: "Internacional" },
             },
           },
         ],
@@ -255,6 +278,21 @@ describe("getDashboardData", () => {
         matchLabel: "Flamengo vs Palmeiras",
         predictedScore: "2-1",
         createdAt: "2026-07-25T12:00:00.000Z",
+        pointsEarned: 1,
+      },
+      {
+        id: "pred-2",
+        matchLabel: "Corinthians vs Santos",
+        predictedScore: "0-3",
+        createdAt: "2026-07-24T12:00:00.000Z",
+        pointsEarned: 0,
+      },
+      {
+        id: "pred-3",
+        matchLabel: "Grêmio vs Internacional",
+        predictedScore: "1-1",
+        createdAt: "2026-07-23T12:00:00.000Z",
+        pointsEarned: null,
       },
     ]);
   });

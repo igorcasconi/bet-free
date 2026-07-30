@@ -126,6 +126,7 @@ describe("getProfileData", () => {
         matchLabel: "Flamengo vs Palmeiras",
         predictedScore: "2-1",
         createdAt: "2026-07-25T12:00:00.000Z",
+        pointsEarned: null,
       },
     ]);
 

@@ -28,4 +28,5 @@ export interface DashboardPrediction {
   matchLabel: string;
   predictedScore: string;
   createdAt: string;
+  pointsEarned: 0 | 1 | null;
 }

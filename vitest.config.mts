@@ -9,6 +9,7 @@ const JSDOM_GLOBS = [
   "tests/features/matches/components/**",
   "tests/features/matches/hooks/**",
   "tests/features/profile/components/**",
+  "tests/features/auth/hooks/**",
 ];
 
 export default defineConfig({

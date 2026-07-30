@@ -25,6 +25,7 @@ interface PredictionRow {
   predicted_home_score: number;
   predicted_away_score: number;
   created_at: string;
+  points_earned: number | null;
   matches: {
     home_team: { name: string } | null;
     away_team: { name: string } | null;
@@ -103,7 +104,7 @@ export async function getLatestPredictions(
   const { data, error } = await supabaseAdmin
     .from("predictions")
     .select(
-      "id, predicted_home_score, predicted_away_score, created_at, matches(home_team:teams!matches_home_team_id_fkey(name), away_team:teams!matches_away_team_id_fkey(name))",
+      "id, predicted_home_score, predicted_away_score, created_at, points_earned, matches(home_team:teams!matches_home_team_id_fkey(name), away_team:teams!matches_away_team_id_fkey(name))",
     )
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
@@ -116,6 +117,7 @@ export async function getLatestPredictions(
     matchLabel: `${row.matches?.home_team?.name ?? ""} vs ${row.matches?.away_team?.name ?? ""}`,
     predictedScore: `${row.predicted_home_score}-${row.predicted_away_score}`,
     createdAt: row.created_at,
+    pointsEarned: row.points_earned as 0 | 1 | null,
   }));
 }
 

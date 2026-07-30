@@ -8,6 +8,7 @@ import type { UpcomingMatchesPage } from "@/features/matches/types";
 
 const submitPredictionMock = vi.fn();
 const refreshMock = vi.fn();
+const trackEventMock = vi.fn();
 
 vi.mock("@/features/matches/actions/predictions", () => ({
   submitPrediction: submitPredictionMock,
@@ -15,6 +16,10 @@ vi.mock("@/features/matches/actions/predictions", () => ({
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: refreshMock }),
+}));
+
+vi.mock("@/lib/analytics/track-event", () => ({
+  trackEvent: trackEventMock,
 }));
 
 const { useSubmitPrediction } =
@@ -90,6 +95,8 @@ describe("useSubmitPrediction", () => {
       predictedAwayScore: 1,
     });
     expect(refreshMock).toHaveBeenCalledTimes(1);
+    expect(trackEventMock).toHaveBeenCalledTimes(1);
+    expect(trackEventMock).toHaveBeenCalledWith("prediction_created");
   });
 
   it("does not patch the cache or refresh the router when the mutation returns a business failure", async () => {
@@ -116,5 +123,6 @@ describe("useSubmitPrediction", () => {
     }>(UPCOMING_QUERY_KEY);
     expect(cached?.pages[0]?.groups[0]?.matches[0]?.prediction).toBeNull();
     expect(refreshMock).not.toHaveBeenCalled();
+    expect(trackEventMock).not.toHaveBeenCalled();
   });
 });

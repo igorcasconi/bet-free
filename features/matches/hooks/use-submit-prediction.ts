@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { QUERY_KEYS } from "@/config/query-keys";
 import { submitPrediction } from "@/features/matches/actions/predictions";
 import type { UpcomingMatchesPage } from "@/features/matches/types";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 const UPCOMING_QUERY_KEY = [...QUERY_KEYS.MATCHES, "upcoming"];
 
@@ -49,6 +50,8 @@ export function useSubmitPrediction() {
     mutationFn: submitPrediction,
     onSuccess: (result, variables) => {
       if (!result.ok) return;
+
+      trackEvent("prediction_created");
 
       queryClient.setQueriesData<InfiniteData<UpcomingMatchesPage>>(
         { queryKey: UPCOMING_QUERY_KEY },

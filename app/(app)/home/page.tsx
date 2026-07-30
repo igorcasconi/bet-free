@@ -5,6 +5,7 @@ import {
   LatestPredictionsSection,
   MatchListSection,
   MoneyPreservedCard,
+  PredictionResultsTracker,
   StatCard,
   XpProgressCard,
   getDashboardData,
@@ -59,6 +60,7 @@ export default async function HomePage() {
       />
 
       <LatestPredictionsSection predictions={latestPredictions} />
+      <PredictionResultsTracker predictions={latestPredictions} />
     </div>
   );
 }

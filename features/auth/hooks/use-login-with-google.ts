@@ -11,6 +11,7 @@ import {
   mapFirebaseError,
 } from "@/features/auth/services/auth-service";
 import { syncSession } from "@/features/auth/actions/session-actions";
+import { trackEvent } from "@/lib/analytics/track-event";
 
 export function useLoginWithGoogle(redirectTo?: string) {
   const router = useRouter();
@@ -29,11 +30,16 @@ export function useLoginWithGoogle(redirectTo?: string) {
 
       const idToken = await credential.user.getIdToken();
       await syncSession(idToken);
+      trackEvent("login");
       router.push(redirectTo ?? "/home");
     } catch (error) {
       toast.error(mapFirebaseError(error));
     }
   }, [redirectTo, router]);
 
-  return { signIn: signIn.mutate, isPending: signIn.isPending, resolveRedirect };
+  return {
+    signIn: signIn.mutate,
+    isPending: signIn.isPending,
+    resolveRedirect,
+  };
 }
