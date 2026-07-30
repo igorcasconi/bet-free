@@ -8,6 +8,7 @@ const JSDOM_GLOBS = [
   "tests/features/navigation/**",
   "tests/features/matches/components/**",
   "tests/features/matches/hooks/**",
+  "tests/features/profile/components/**",
 ];
 
 export default defineConfig({

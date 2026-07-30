@@ -1,12 +1,19 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { getDashboardData } from "@/features/dashboard/services/get-dashboard-data";
+import { getAccuracyPercent } from "@/lib/predictions/accuracy";
 
 const { fromMock } = vi.hoisted(() => ({ fromMock: vi.fn() }));
 
 vi.mock("@/lib/supabase/admin", () => ({
   supabaseAdmin: { from: fromMock },
 }));
+
+vi.mock("@/lib/predictions/accuracy", () => ({
+  getAccuracyPercent: vi.fn(),
+}));
+
+const getAccuracyPercentMock = vi.mocked(getAccuracyPercent);
 
 interface QueryResult {
   data: unknown;
@@ -40,11 +47,9 @@ function createBuilder(result: QueryResult) {
 function setupTables(overrides: {
   users?: QueryResult;
   matches?: [today: QueryResult, upcoming: QueryResult];
-  predictionsAccuracy?: QueryResult;
   latestPredictions?: QueryResult;
 }): void {
   let matchesCallCount = 0;
-  let predictionsCallCount = 0;
 
   fromMock.mockImplementation((table: string) => {
     if (table === "users") {
@@ -58,20 +63,18 @@ function setupTables(overrides: {
     }
 
     if (table === "predictions") {
-      predictionsCallCount += 1;
-      return createBuilder(
-        predictionsCallCount === 1
-          ? (overrides.predictionsAccuracy ?? EMPTY)
-          : (overrides.latestPredictions ?? EMPTY),
-      );
+      return createBuilder(overrides.latestPredictions ?? EMPTY);
     }
 
     throw new Error(`Unexpected table: ${table}`);
   });
 }
 
+getAccuracyPercentMock.mockResolvedValue(0);
+
 afterEach(() => {
   vi.clearAllMocks();
+  getAccuracyPercentMock.mockResolvedValue(0);
 });
 
 describe("getDashboardData", () => {
@@ -108,35 +111,29 @@ describe("getDashboardData", () => {
     expect(result.latestPredictions).toEqual([]);
   });
 
-  it("computes accuracy as points_earned > 0 over points_earned IS NOT NULL", async () => {
+  it("uses the accuracy percent returned by the shared getAccuracyPercent", async () => {
     setupTables({
       users: {
         data: { id: "user-1", money_saved: 4380, current_streak: 23, xp: 2340 },
         error: null,
       },
-      predictionsAccuracy: {
-        data: [
-          { points_earned: 10 },
-          { points_earned: 0 },
-          { points_earned: 5 },
-        ],
-        error: null,
-      },
     });
+    getAccuracyPercentMock.mockResolvedValue(67);
 
     const result = await getDashboardData("uid-1");
 
     expect(result.stats.accuracyPercent).toBe(67);
+    expect(getAccuracyPercentMock).toHaveBeenCalledWith("user-1");
   });
 
-  it("returns 0% accuracy without dividing by zero when there are no finalized predictions", async () => {
+  it("returns 0% accuracy when getAccuracyPercent resolves to 0", async () => {
     setupTables({
       users: {
         data: { id: "user-1", money_saved: 0, current_streak: 0, xp: 0 },
         error: null,
       },
-      predictionsAccuracy: EMPTY,
     });
+    getAccuracyPercentMock.mockResolvedValue(0);
 
     const result = await getDashboardData("uid-1");
 

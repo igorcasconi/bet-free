@@ -38,6 +38,8 @@ const eslintConfig = defineConfig([
       "features/matches/services/**/*.ts",
       "features/prediction-processing/services/**/*.ts",
       "features/ranking-engine/services/**/*.ts",
+      "features/profile/services/**/*.ts",
+      "lib/predictions/**/*.ts",
     ],
     rules: {
       "no-restricted-imports": "off",

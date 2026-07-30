@@ -5,6 +5,7 @@ import type {
   DashboardPrediction,
 } from "@/features/dashboard/types";
 import { XP_THRESHOLD, levelForXp, xpInLevelForXp } from "@/lib/gamification";
+import { getAccuracyPercent } from "@/lib/predictions/accuracy";
 
 const LATEST_PREDICTIONS_LIMIT = 5;
 
@@ -96,26 +97,7 @@ async function getTodayAndUpcomingMatches(): Promise<{
   };
 }
 
-async function getAccuracyPercent(userId: string): Promise<number> {
-  const { data, error } = await supabaseAdmin
-    .from("predictions")
-    .select("points_earned")
-    .eq("user_id", userId)
-    .not("points_earned", "is", null);
-
-  if (error) throw error;
-
-  const rows = data ?? [];
-  if (rows.length === 0) return 0;
-
-  const correct = rows.filter(
-    (row) => (row.points_earned as number) > 0,
-  ).length;
-
-  return Math.round((correct / rows.length) * 100);
-}
-
-async function getLatestPredictions(
+export async function getLatestPredictions(
   userId: string,
 ): Promise<DashboardPrediction[]> {
   const { data, error } = await supabaseAdmin
