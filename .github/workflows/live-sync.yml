@@ -40,3 +40,9 @@ jobs:
           curl -f --max-time 60 --retry 2 --retry-delay 5 \
             -X POST "${{ secrets.APP_BASE_URL }}/api/predictions/process" \
             -H "x-sync-secret: ${{ secrets.SYNC_SECRET }}"
+
+      - name: Trigger ranking recompute
+        run: |
+          curl -f --max-time 60 --retry 2 --retry-delay 5 \
+            -X POST "${{ secrets.APP_BASE_URL }}/api/rankings/process" \
+            -H "x-sync-secret: ${{ secrets.SYNC_SECRET }}"

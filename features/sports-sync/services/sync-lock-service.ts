@@ -4,7 +4,13 @@ const UNIQUE_VIOLATION = "23505";
 const STALE_AFTER_SECONDS = 10 * 60;
 
 export type SyncType =
-  "competitions" | "teams" | "matches" | "live" | "finished" | "predictions";
+  | "competitions"
+  | "teams"
+  | "matches"
+  | "live"
+  | "finished"
+  | "predictions"
+  | "rankings";
 
 export class SyncAlreadyRunningError extends Error {
   constructor(readonly type: SyncType) {
