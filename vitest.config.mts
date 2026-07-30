@@ -6,6 +6,8 @@ import { configDefaults, defineConfig } from "vitest/config";
 const JSDOM_GLOBS = [
   "tests/features/dashboard/components/**",
   "tests/features/navigation/**",
+  "tests/features/matches/components/**",
+  "tests/features/matches/hooks/**",
 ];
 
 export default defineConfig({

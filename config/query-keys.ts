@@ -1,1 +1,3 @@
-export const QUERY_KEYS = {} as const;
+export const QUERY_KEYS = {
+  MATCHES: ["matches"],
+} as const;
