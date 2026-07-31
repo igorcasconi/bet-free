@@ -1,4 +1,3 @@
-import { sportsProvider } from "@/lib/sports-provider";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export interface MatchStatusUpdate {
@@ -10,6 +9,7 @@ export interface MatchStatusUpdate {
 
 export async function updateMatchRow(
   match: MatchStatusUpdate,
+  source: string,
 ): Promise<boolean> {
   const { data, error } = await supabaseAdmin
     .from("matches")
@@ -18,7 +18,7 @@ export async function updateMatchRow(
       home_score: match.homeScore,
       away_score: match.awayScore,
     })
-    .eq("external_source", sportsProvider.source)
+    .eq("external_source", source)
     .eq("external_id", match.externalId)
     .select("id");
 

@@ -7,8 +7,10 @@ export const env = createEnv({
     FIREBASE_CLIENT_EMAIL: z.string().min(1),
     FIREBASE_PRIVATE_KEY: z.string().min(1),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-    SPORTS_PROVIDER_API_KEY: z.string().min(1),
-    SPORTS_PROVIDER_LEAGUE_IDS: z.string().min(1),
+    DADOS_FUTEBOL_API_KEY: z.string().min(1),
+    SPORTS_BR_LEAGUE_IDS: z.string().min(1),
+    FOOTBALL_DATA_API_KEY: z.string().min(1),
+    SPORT_SA_LEAGUE_IDS: z.string().min(1),
     SYNC_SECRET: z.string().min(1),
   },
   client: {

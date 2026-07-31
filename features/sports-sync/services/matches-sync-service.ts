@@ -2,7 +2,7 @@ import {
   DEFAULT_CONCURRENCY_LIMIT,
   mapWithConcurrency,
 } from "@/lib/concurrency";
-import { sportsProvider } from "@/lib/sports-provider";
+import { sportsProviders } from "@/lib/sports-provider";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function syncMatches(): Promise<{
@@ -10,7 +10,9 @@ export async function syncMatches(): Promise<{
   skipped: number;
 }> {
   const [competitionsResult, teamsResult] = await Promise.all([
-    supabaseAdmin.from("competitions").select("id, external_id, season"),
+    supabaseAdmin
+      .from("competitions")
+      .select("id, external_id, external_source, season"),
     supabaseAdmin.from("teams").select("id, external_id"),
   ]);
 
@@ -30,11 +32,22 @@ export async function syncMatches(): Promise<{
       .map((team) => [team.external_id as string, team.id as string]),
   );
 
+  const providerBySource = new Map(sportsProviders.map((p) => [p.source, p]));
+
   const results = await mapWithConcurrency(
     competitions,
     DEFAULT_CONCURRENCY_LIMIT,
     async (competition) => {
-      const matches = await sportsProvider.syncMatches(
+      const provider = providerBySource.get(competition.external_source);
+
+      if (!provider) {
+        console.warn(
+          `No provider found for external_source "${competition.external_source}"`,
+        );
+        return { synced: 0, skipped: 1 };
+      }
+
+      const matches = await provider.syncMatches(
         competition.external_id,
         competition.season,
       );
@@ -64,7 +77,7 @@ export async function syncMatches(): Promise<{
           home_score: match.homeScore,
           away_score: match.awayScore,
           external_id: match.externalId,
-          external_source: sportsProvider.source,
+          external_source: provider.source,
         });
       }
 

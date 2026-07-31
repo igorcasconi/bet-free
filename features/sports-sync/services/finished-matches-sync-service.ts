@@ -2,14 +2,14 @@ import {
   DEFAULT_CONCURRENCY_LIMIT,
   mapWithConcurrency,
 } from "@/lib/concurrency";
-import { sportsProvider } from "@/lib/sports-provider";
+import { sportsProviders } from "@/lib/sports-provider";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 import { updateMatchRow } from "./update-match-row";
 
 // Matches sitting in a non-final status this long are considered "stuck" —
-// the live-sync approximation (today's fixtures only, see
-// thesportsdb-provider.ts) never reconciled them to a final result.
+// the live-sync approximation (today's fixtures only) never reconciled them
+// to a final result.
 const STUCK_THRESHOLD_HOURS = 4;
 
 // Caps a single run's backlog processing. A result at the cap is a signal
@@ -19,7 +19,10 @@ const STUCK_THRESHOLD_HOURS = 4;
 const STUCK_MATCHES_LIMIT = 500;
 
 interface StuckMatchRow {
-  competitions: { external_id: string | null } | null;
+  competitions: {
+    external_id: string | null;
+    external_source: string | null;
+  } | null;
 }
 
 export async function updateFinishedMatches(): Promise<{
@@ -32,7 +35,7 @@ export async function updateFinishedMatches(): Promise<{
 
   const { data, error } = await supabaseAdmin
     .from("matches")
-    .select("competitions(external_id)")
+    .select("competitions(external_id, external_source)")
     .in("status", ["scheduled", "live"])
     .lt("match_date", cutoff)
     .limit(STUCK_MATCHES_LIMIT);
@@ -51,29 +54,57 @@ export async function updateFinishedMatches(): Promise<{
     );
   }
 
-  const competitionExternalIds = [
-    ...new Set(
+  const competitionPairs = [
+    ...new Map(
       rows
-        .map((row) => row.competitions?.external_id)
-        .filter((id): id is string => Boolean(id)),
-    ),
+        .filter(
+          (
+            row,
+          ): row is StuckMatchRow & {
+            competitions: { external_id: string; external_source: string };
+          } =>
+            Boolean(row.competitions?.external_id) &&
+            Boolean(row.competitions?.external_source),
+        )
+        .map((row) => [
+          `${row.competitions.external_source}:${row.competitions.external_id}`,
+          {
+            externalId: row.competitions.external_id,
+            externalSource: row.competitions.external_source,
+          },
+        ]),
+    ).values(),
   ];
 
-  if (competitionExternalIds.length === 0) {
+  if (competitionPairs.length === 0) {
     return { updated: 0, ignored: 0 };
   }
 
+  const providerBySource = new Map(sportsProviders.map((p) => [p.source, p]));
+
   const matchesPerCompetition = await mapWithConcurrency(
-    competitionExternalIds,
+    competitionPairs,
     DEFAULT_CONCURRENCY_LIMIT,
-    (externalCompetitionId) =>
-      sportsProvider.updateFinishedMatches(externalCompetitionId),
+    async ({ externalId, externalSource }) => {
+      const provider = providerBySource.get(externalSource);
+
+      if (!provider) {
+        console.warn(
+          `No provider found for external_source "${externalSource}"`,
+        );
+        return [];
+      }
+
+      const matches = await provider.updateFinishedMatches(externalId);
+
+      return matches.map((match) => ({ match, source: provider.source }));
+    },
   );
 
   const results = await mapWithConcurrency(
     matchesPerCompetition.flat(),
     DEFAULT_CONCURRENCY_LIMIT,
-    updateMatchRow,
+    ({ match, source }) => updateMatchRow(match, source),
   );
 
   return {

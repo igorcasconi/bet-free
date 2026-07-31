@@ -4,12 +4,14 @@ import { syncMatches } from "@/features/sports-sync/services/matches-sync-servic
 
 const {
   syncMatchesMock,
+  syncMatchesMockAlt,
   competitionsSelectMock,
   teamsSelectMock,
   matchesUpsertMock,
   fromMock,
 } = vi.hoisted(() => ({
   syncMatchesMock: vi.fn(),
+  syncMatchesMockAlt: vi.fn(),
   competitionsSelectMock: vi.fn(),
   teamsSelectMock: vi.fn(),
   matchesUpsertMock: vi.fn(),
@@ -17,7 +19,10 @@ const {
 }));
 
 vi.mock("@/lib/sports-provider", () => ({
-  sportsProvider: { source: "thesportsdb", syncMatches: syncMatchesMock },
+  sportsProviders: [
+    { source: "provider-a", syncMatches: syncMatchesMock },
+    { source: "football-data", syncMatches: syncMatchesMockAlt },
+  ],
 }));
 
 vi.mock("@/lib/supabase/admin", () => ({
@@ -43,7 +48,14 @@ afterEach(() => {
 describe("syncMatches", () => {
   it("resolves team ids by external_id and upserts matches", async () => {
     competitionsSelectMock.mockResolvedValue({
-      data: [{ id: "comp-1", external_id: "4328", season: "2023-2024" }],
+      data: [
+        {
+          id: "comp-1",
+          external_id: "4328",
+          external_source: "provider-a",
+          season: "2023-2024",
+        },
+      ],
       error: null,
     });
     teamsSelectMock.mockResolvedValue({
@@ -83,7 +95,7 @@ describe("syncMatches", () => {
           home_score: null,
           away_score: null,
           external_id: "441613",
-          external_source: "thesportsdb",
+          external_source: "provider-a",
         },
       ],
       { onConflict: "external_source,external_id" },
@@ -93,7 +105,14 @@ describe("syncMatches", () => {
 
   it("skips a match when a referenced team is not yet synced, without failing the sync", async () => {
     competitionsSelectMock.mockResolvedValue({
-      data: [{ id: "comp-1", external_id: "4328", season: "2023-2024" }],
+      data: [
+        {
+          id: "comp-1",
+          external_id: "4328",
+          external_source: "provider-a",
+          season: "2023-2024",
+        },
+      ],
       error: null,
     });
     teamsSelectMock.mockResolvedValue({
@@ -116,6 +135,28 @@ describe("syncMatches", () => {
 
     const result = await syncMatches();
 
+    expect(matchesUpsertMock).not.toHaveBeenCalled();
+    expect(result).toEqual({ synced: 0, skipped: 1 });
+  });
+
+  it("skips a competition with no matching provider, without failing the sync", async () => {
+    competitionsSelectMock.mockResolvedValue({
+      data: [
+        {
+          id: "comp-1",
+          external_id: "4328",
+          external_source: "unknown-provider",
+          season: "2023-2024",
+        },
+      ],
+      error: null,
+    });
+    teamsSelectMock.mockResolvedValue({ data: [], error: null });
+
+    const result = await syncMatches();
+
+    expect(syncMatchesMock).not.toHaveBeenCalled();
+    expect(syncMatchesMockAlt).not.toHaveBeenCalled();
     expect(matchesUpsertMock).not.toHaveBeenCalled();
     expect(result).toEqual({ synced: 0, skipped: 1 });
   });

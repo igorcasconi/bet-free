@@ -2,7 +2,7 @@ import {
   DEFAULT_CONCURRENCY_LIMIT,
   mapWithConcurrency,
 } from "@/lib/concurrency";
-import { sportsProvider } from "@/lib/sports-provider";
+import { sportsProviders } from "@/lib/sports-provider";
 
 import { updateMatchRow } from "./update-match-row";
 
@@ -10,16 +10,20 @@ export async function updateLiveMatches(): Promise<{
   updated: number;
   ignored: number;
 }> {
-  const matches = await sportsProvider.updateLiveMatches();
+  const results = await Promise.all(
+    sportsProviders.map(async (provider) => {
+      const matches = await provider.updateLiveMatches();
 
-  const results = await mapWithConcurrency(
-    matches,
-    DEFAULT_CONCURRENCY_LIMIT,
-    updateMatchRow,
+      return mapWithConcurrency(matches, DEFAULT_CONCURRENCY_LIMIT, (match) =>
+        updateMatchRow(match, provider.source),
+      );
+    }),
   );
 
+  const found = results.flat();
+
   return {
-    updated: results.filter(Boolean).length,
-    ignored: results.filter((found) => !found).length,
+    updated: found.filter(Boolean).length,
+    ignored: found.filter((match) => !match).length,
   };
 }

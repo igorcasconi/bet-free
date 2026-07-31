@@ -2,25 +2,39 @@ import {
   DEFAULT_CONCURRENCY_LIMIT,
   mapWithConcurrency,
 } from "@/lib/concurrency";
-import { sportsProvider } from "@/lib/sports-provider";
+import { sportsProviders } from "@/lib/sports-provider";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function syncTeams(): Promise<{ synced: number }> {
   const { data, error } = await supabaseAdmin
     .from("competitions")
-    .select("external_id");
+    .select("external_id, external_source");
 
   if (error) throw error;
 
-  const externalCompetitionIds = (data ?? [])
-    .map((competition) => competition.external_id)
-    .filter((externalId): externalId is string => externalId !== null);
+  const competitions = (data ?? []).filter(
+    (
+      competition,
+    ): competition is typeof competition & { external_id: string } =>
+      competition.external_id !== null,
+  );
+
+  const providerBySource = new Map(sportsProviders.map((p) => [p.source, p]));
 
   const syncedCounts = await mapWithConcurrency(
-    externalCompetitionIds,
+    competitions,
     DEFAULT_CONCURRENCY_LIMIT,
-    async (externalCompetitionId) => {
-      const teams = await sportsProvider.syncTeams(externalCompetitionId);
+    async (competition) => {
+      const provider = providerBySource.get(competition.external_source);
+
+      if (!provider) {
+        console.warn(
+          `No provider found for external_source "${competition.external_source}"`,
+        );
+        return 0;
+      }
+
+      const teams = await provider.syncTeams(competition.external_id);
 
       if (teams.length === 0) return 0;
 
@@ -29,7 +43,7 @@ export async function syncTeams(): Promise<{ synced: number }> {
         slug: team.slug,
         logo_url: team.logoUrl,
         external_id: team.externalId,
-        external_source: sportsProvider.source,
+        external_source: provider.source,
       }));
 
       const { error: upsertError } = await supabaseAdmin
