@@ -55,8 +55,8 @@ const teamsResponseSchema = z.object({
 const matchSchema = z.object({
   id: z.number(),
   competition: z.object({ id: z.number() }),
-  homeTeam: z.object({ id: z.number() }),
-  awayTeam: z.object({ id: z.number() }),
+  homeTeam: z.object({ id: z.number().nullable() }),
+  awayTeam: z.object({ id: z.number().nullable() }),
   utcDate: z.string(),
   matchday: z.number().nullable(),
   status: z.string(),
@@ -82,7 +82,12 @@ function mapStatus(rawStatus: string): MatchStatus {
   return status;
 }
 
-function toProviderMatch(match: z.infer<typeof matchSchema>): ProviderMatch {
+function toProviderMatch(
+  match: z.infer<typeof matchSchema> & {
+    homeTeam: { id: number };
+    awayTeam: { id: number };
+  },
+): ProviderMatch {
   return {
     externalId: String(match.id),
     externalCompetitionId: String(match.competition.id),
@@ -94,6 +99,28 @@ function toProviderMatch(match: z.infer<typeof matchSchema>): ProviderMatch {
     homeScore: match.score.fullTime.home,
     awayScore: match.score.fullTime.away,
   };
+}
+
+// Future knockout fixtures with an undecided bracket report both teams as
+// null — not yet a real match, so it's skipped rather than synced.
+function toProviderMatches(
+  matches: z.infer<typeof matchSchema>[],
+): ProviderMatch[] {
+  return matches.flatMap((match) => {
+    if (match.homeTeam.id === null || match.awayTeam.id === null) {
+      console.warn(
+        `Skipping football-data match ${match.id}: teams not yet determined`,
+      );
+      return [];
+    }
+    return [
+      toProviderMatch({
+        ...match,
+        homeTeam: { id: match.homeTeam.id },
+        awayTeam: { id: match.awayTeam.id },
+      }),
+    ];
+  });
 }
 
 export class FootballDataProvider implements SportsProvider {
@@ -180,7 +207,7 @@ export class FootballDataProvider implements SportsProvider {
       );
     }
 
-    return parsed.data.matches.map(toProviderMatch);
+    return toProviderMatches(parsed.data.matches);
   }
 
   async updateLiveMatches(): Promise<ProviderMatch[]> {
@@ -197,9 +224,11 @@ export class FootballDataProvider implements SportsProvider {
     }
 
     const configuredIds = new Set(this.configuredLeagueIds);
-    return parsed.data.matches
-      .filter((match) => configuredIds.has(String(match.competition.id)))
-      .map(toProviderMatch);
+    return toProviderMatches(
+      parsed.data.matches.filter((match) =>
+        configuredIds.has(String(match.competition.id)),
+      ),
+    );
   }
 
   async updateFinishedMatches(
@@ -217,6 +246,6 @@ export class FootballDataProvider implements SportsProvider {
       );
     }
 
-    return parsed.data.matches.map(toProviderMatch);
+    return toProviderMatches(parsed.data.matches);
   }
 }

@@ -184,6 +184,23 @@ describe("syncMatches", () => {
       },
     ]);
   });
+
+  it("skips matches with an undecided bracket (null team ids) instead of throwing", async () => {
+    mockFetchJson({
+      matches: [
+        matchFixture({ id: 1 }),
+        matchFixture({
+          id: 2,
+          homeTeam: { id: null },
+          awayTeam: { id: null },
+        }),
+      ],
+    });
+
+    const result = await makeSingleLeagueProvider().syncMatches("2152", "2026");
+
+    expect(result).toEqual([expect.objectContaining({ externalId: "1" })]);
+  });
 });
 
 describe("updateLiveMatches", () => {
