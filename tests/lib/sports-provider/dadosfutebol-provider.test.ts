@@ -35,14 +35,26 @@ function makeSingleLeagueProvider(): DadosFutebolProvider {
   return new DadosFutebolProvider("test-key", "1");
 }
 
-function partida(overrides: Partial<Record<string, unknown>> = {}) {
+function campeonato(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    id: "1",
+    nome: "Brasileirao",
+    temporada: "2024",
+    logo_url: null,
+    ...overrides,
+  };
+}
+
+function time(overrides: Partial<Record<string, unknown>> = {}) {
+  return { id: "100", nome: "Flamengo", escudo_url: null, ...overrides };
+}
+
+function rodadaPartida(overrides: Partial<Record<string, unknown>> = {}) {
   return {
     id: "10",
-    campeonato: { id: "1" },
-    time_mandante: { id: "100", nome: "Flamengo", escudo: null },
-    time_visitante: { id: "200", nome: "Palmeiras", escudo: null },
+    time_mandante: time({ id: "100", nome: "Flamengo" }),
+    time_visitante: time({ id: "200", nome: "Palmeiras" }),
     data_hora_realizacao: "2024-05-01T20:00:00.000Z",
-    rodada: "10",
     status: "aguardando",
     placar_mandante: null,
     placar_visitante: null,
@@ -59,13 +71,7 @@ describe("constructor", () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
-      json: () =>
-        Promise.resolve({
-          id: "1",
-          nome: "Brasileirao",
-          temporada: "2024",
-          escudo: null,
-        }),
+      json: () => Promise.resolve({ data: campeonato() }),
     });
     vi.stubGlobal("fetch", fetchMock);
 
@@ -82,16 +88,14 @@ describe("syncCompetitions", () => {
   it("calls GET /v1/campeonatos/:id per configured id and accumulates results", async () => {
     mockFetchJsonPerUrl({
       "https://api.dadosfutebol.com.br/v1/campeonatos/1": {
-        id: "1",
-        nome: "Brasileirao Serie A",
-        temporada: "2024",
-        escudo: "https://example.com/a.png",
+        data: campeonato({
+          id: "1",
+          nome: "Brasileirao Serie A",
+          logo_url: "https://example.com/a.png",
+        }),
       },
       "https://api.dadosfutebol.com.br/v1/campeonatos/2": {
-        id: 2,
-        nome: "Copa do Brasil",
-        temporada: "2024",
-        escudo: null,
+        data: campeonato({ id: 2, nome: "Copa do Brasil", logo_url: null }),
       },
     });
 
@@ -120,121 +124,65 @@ describe("syncCompetitions", () => {
 });
 
 describe("syncTeams", () => {
-  it("returns deduplicated ProviderTeam[] across 2 pages", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () =>
-            Promise.resolve({
-              data: [
-                partida({
-                  id: "1",
-                  time_mandante: { id: "100", nome: "Flamengo", escudo: null },
-                  time_visitante: {
-                    id: "200",
-                    nome: "Palmeiras",
-                    escudo: null,
-                  },
-                }),
-              ],
-              meta: { pagina_atual: 1, ultima_pagina: 2 },
+  it("returns ProviderTeam[] derived from the standings table", async () => {
+    mockFetchJson({
+      data: {
+        classificacao: [
+          { time: time({ id: "100", nome: "Flamengo", escudo_url: null }) },
+          {
+            time: time({
+              id: "200",
+              nome: "Palmeiras",
+              escudo_url: "https://example.com/pal.png",
             }),
-        }),
-      )
-      .mockImplementationOnce(() =>
-        Promise.resolve({
-          ok: true,
-          status: 200,
-          json: () =>
-            Promise.resolve({
-              data: [
-                partida({
-                  id: "2",
-                  time_mandante: { id: "100", nome: "Flamengo", escudo: null },
-                  time_visitante: {
-                    id: "300",
-                    nome: "Corinthians",
-                    escudo: "https://example.com/cor.png",
-                  },
-                }),
-              ],
-              meta: { pagina_atual: 2, ultima_pagina: 2 },
-            }),
-        }),
-      );
-    vi.stubGlobal("fetch", fetchMock);
+          },
+        ],
+      },
+    });
 
     const result = await makeProvider().syncTeams("1");
 
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(result).toEqual(
-      expect.arrayContaining([
-        {
-          externalId: "100",
-          name: "Flamengo",
-          slug: "flamengo",
-          logoUrl: null,
-        },
-        {
-          externalId: "200",
-          name: "Palmeiras",
-          slug: "palmeiras",
-          logoUrl: null,
-        },
-        {
-          externalId: "300",
-          name: "Corinthians",
-          slug: "corinthians",
-          logoUrl: "https://example.com/cor.png",
-        },
-      ]),
-    );
-    expect(result).toHaveLength(3);
+    expect(result).toEqual([
+      {
+        externalId: "100",
+        name: "Flamengo",
+        slug: "flamengo",
+        logoUrl: null,
+      },
+      {
+        externalId: "200",
+        name: "Palmeiras",
+        slug: "palmeiras",
+        logoUrl: "https://example.com/pal.png",
+      },
+    ]);
   });
 
-  it("returns an empty array when there are no partidas", async () => {
-    mockFetchJson({ data: [], meta: { pagina_atual: 1, ultima_pagina: 1 } });
+  it("returns an empty array for mata-mata competitions (empty classificacao)", async () => {
+    mockFetchJson({ data: { classificacao: [] } });
 
-    const result = await makeProvider().syncTeams("1");
+    const result = await makeProvider().syncTeams("62");
 
     expect(result).toEqual([]);
   });
 });
 
-describe("pagination", () => {
-  it("stops after 1 call when the first page already satisfies pagina_atual >= ultima_pagina", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () =>
-        Promise.resolve({
-          data: [partida()],
-          meta: { pagina_atual: 1, ultima_pagina: 1 },
-        }),
-    });
-    vi.stubGlobal("fetch", fetchMock);
-
-    await makeProvider().syncMatches("1", "2024");
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-  });
-});
-
 describe("syncMatches", () => {
-  it("returns normalized ProviderMatch[] and ignores the season param", async () => {
+  it("returns normalized ProviderMatch[] flattened across rodadas, ignoring the season param", async () => {
     mockFetchJson({
       data: [
-        partida({
-          id: "10",
-          status: "aguardando",
-          placar_mandante: null,
-          placar_visitante: null,
-        }),
+        {
+          numero: 10,
+          partidas: [
+            rodadaPartida({
+              id: "10",
+              status: "aguardando",
+              placar_mandante: null,
+              placar_visitante: null,
+            }),
+          ],
+        },
       ],
-      meta: { pagina_atual: 1, ultima_pagina: 1 },
     });
 
     const result = await makeProvider().syncMatches("1", "2024-unused");
@@ -253,25 +201,52 @@ describe("syncMatches", () => {
       },
     ]);
   });
+
+  it("skips partidas with a null data_hora_realizacao instead of throwing", async () => {
+    mockFetchJson({
+      data: [
+        {
+          numero: 10,
+          partidas: [
+            rodadaPartida({ id: "10", data_hora_realizacao: null }),
+            rodadaPartida({ id: "11" }),
+          ],
+        },
+      ],
+    });
+
+    const result = await makeProvider().syncMatches("1", "2024");
+
+    expect(result).toEqual([expect.objectContaining({ externalId: "11" })]);
+  });
 });
 
 describe("updateLiveMatches", () => {
-  it("calls GET /v1/partidas/ao-vivo and filters to configured league ids", async () => {
-    mockFetchJson({
-      data: [
-        partida({
-          id: "1",
-          campeonato: { id: "1" },
-          status: "ao_vivo",
-          placar_mandante: 1,
-          placar_visitante: 0,
-        }),
-        partida({
-          id: "2",
-          campeonato: { id: "999" },
-          status: "ao_vivo",
-        }),
-      ],
+  it("fetches rodadas per configured league id and filters to live matches", async () => {
+    mockFetchJsonPerUrl({
+      "https://api.dadosfutebol.com.br/v1/campeonatos/1/rodadas": {
+        data: [
+          {
+            numero: 1,
+            partidas: [
+              rodadaPartida({
+                id: "1",
+                status: "ao_vivo",
+                placar_mandante: 1,
+                placar_visitante: 0,
+              }),
+            ],
+          },
+        ],
+      },
+      "https://api.dadosfutebol.com.br/v1/campeonatos/2/rodadas": {
+        data: [
+          {
+            numero: 1,
+            partidas: [rodadaPartida({ id: "2", status: "aguardando" })],
+          },
+        ],
+      },
     });
 
     const result = await makeProvider().updateLiveMatches();
@@ -292,15 +267,19 @@ describe("updateFinishedMatches", () => {
   it("returns only partidas with status encerrado", async () => {
     mockFetchJson({
       data: [
-        partida({
-          id: "1",
-          status: "encerrado",
-          placar_mandante: 2,
-          placar_visitante: 1,
-        }),
-        partida({ id: "2", status: "aguardando" }),
+        {
+          numero: 1,
+          partidas: [
+            rodadaPartida({
+              id: "1",
+              status: "encerrado",
+              placar_mandante: 2,
+              placar_visitante: 1,
+            }),
+            rodadaPartida({ id: "2", status: "aguardando" }),
+          ],
+        },
       ],
-      meta: { pagina_atual: 1, ultima_pagina: 1 },
     });
 
     const result = await makeProvider().updateFinishedMatches("1");
@@ -342,8 +321,7 @@ describe("status mapping", () => {
     ["adiado", "postponed"],
   ] as const)("maps status %s to %s", async (raw, expected) => {
     mockFetchJson({
-      data: [partida({ status: raw })],
-      meta: { pagina_atual: 1, ultima_pagina: 1 },
+      data: [{ numero: 1, partidas: [rodadaPartida({ status: raw })] }],
     });
 
     const [match] = await makeProvider().syncMatches("1", "2024");
@@ -353,8 +331,12 @@ describe("status mapping", () => {
 
   it("throws SportsProviderError for an unmapped status value", async () => {
     mockFetchJson({
-      data: [partida({ status: "algo_desconhecido" })],
-      meta: { pagina_atual: 1, ultima_pagina: 1 },
+      data: [
+        {
+          numero: 1,
+          partidas: [rodadaPartida({ status: "algo_desconhecido" })],
+        },
+      ],
     });
 
     await expect(makeProvider().syncMatches("1", "2024")).rejects.toThrow(
