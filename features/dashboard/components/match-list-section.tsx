@@ -19,7 +19,7 @@ export function MatchListSection({
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
         <Link href="/matches" className="text-muted-foreground text-sm">
-          All matches
+          Todas as partidas
         </Link>
       </div>
       {matches.length === 0 ? (

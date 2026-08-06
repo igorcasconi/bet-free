@@ -16,15 +16,15 @@ describe("BottomNav", () => {
 
     render(<BottomNav />);
 
-    expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /matches/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /início/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /partidas/i })).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /rankings/i }),
+      screen.getByRole("link", { name: /classificação/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /achievements/i }),
+      screen.getByRole("link", { name: /conquistas/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /profile/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /perfil/i })).toBeInTheDocument();
   });
 
   it("marks the active route with aria-current and not others", () => {
@@ -32,12 +32,12 @@ describe("BottomNav", () => {
 
     render(<BottomNav />);
 
-    expect(screen.getByRole("link", { name: /matches/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /partidas/i })).toHaveAttribute(
       "aria-current",
       "page",
     );
     expect(
-      screen.getByRole("link", { name: /home/i }),
+      screen.getByRole("link", { name: /início/i }),
     ).not.toHaveAttribute("aria-current");
   });
 

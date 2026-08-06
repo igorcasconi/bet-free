@@ -25,17 +25,17 @@ export async function submitPrediction(
 ): Promise<UpsertPredictionResult> {
   const parsed = submitPredictionSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: "invalid input" };
+    return { ok: false, error: "entrada inválida" };
   }
 
   const firebaseUid = await getCurrentFirebaseUid();
   if (!firebaseUid) {
-    return { ok: false, error: "not authenticated" };
+    return { ok: false, error: "não autenticado" };
   }
 
   const userId = await resolveUserId(firebaseUid);
   if (!userId) {
-    return { ok: false, error: "not authenticated" };
+    return { ok: false, error: "não autenticado" };
   }
 
   return upsertPrediction({

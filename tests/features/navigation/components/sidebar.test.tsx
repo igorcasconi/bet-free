@@ -19,25 +19,25 @@ describe("Sidebar", () => {
     mockUsePathname.mockReturnValue("/home");
     render(<Sidebar />);
 
-    expect(screen.getByRole("link", { name: /home/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /matches/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /rankings/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /início/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /partidas/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /classificação/i })).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /achievements/i }),
+      screen.getByRole("link", { name: /conquistas/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /profile/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /perfil/i })).toBeInTheDocument();
   });
 
   it("marks the link matching the current pathname as active", () => {
     mockUsePathname.mockReturnValue("/home");
     render(<Sidebar />);
 
-    expect(screen.getByRole("link", { name: /home/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /início/i })).toHaveAttribute(
       "aria-current",
       "page",
     );
     expect(
-      screen.getByRole("link", { name: /matches/i }),
+      screen.getByRole("link", { name: /partidas/i }),
     ).not.toHaveAttribute("aria-current");
   });
 
@@ -45,11 +45,11 @@ describe("Sidebar", () => {
     mockUsePathname.mockReturnValue("/matches");
     render(<Sidebar />);
 
-    expect(screen.getByRole("link", { name: /matches/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /partidas/i })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    expect(screen.getByRole("link", { name: /home/i })).not.toHaveAttribute(
+    expect(screen.getByRole("link", { name: /início/i })).not.toHaveAttribute(
       "aria-current",
     );
   });

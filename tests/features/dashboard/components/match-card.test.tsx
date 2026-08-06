@@ -41,11 +41,11 @@ describe("MatchCard", () => {
     expect(screen.getByText("CHE")).toBeInTheDocument();
   });
 
-  it("renders the Make Prediction button as disabled", () => {
+  it("renders the Fazer Palpite button as disabled", () => {
     render(<MatchCard match={baseMatch} />);
 
     expect(
-      screen.getByRole("button", { name: /make prediction/i }),
+      screen.getByRole("button", { name: /fazer palpite/i }),
     ).toBeDisabled();
   });
 });

@@ -20,6 +20,6 @@ describe("AppShell", () => {
     );
 
     expect(screen.getByTestId("page-content")).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: /home/i }).length).toBe(2);
+    expect(screen.getAllByRole("link", { name: /início/i }).length).toBe(2);
   });
 });

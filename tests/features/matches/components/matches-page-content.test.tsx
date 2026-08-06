@@ -160,7 +160,7 @@ describe("MatchesPageContent", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Predict" }));
+    fireEvent.click(screen.getByRole("button", { name: "Palpitar" }));
 
     const dialog = screen.getByTestId("predict-dialog");
     expect(dialog).toHaveAttribute("data-open", "true");

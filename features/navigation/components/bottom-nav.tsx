@@ -7,18 +7,18 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { href: "/home", label: "Home", icon: Home },
-  { href: "/matches", label: "Matches", icon: Calendar },
-  { href: "/rankings", label: "Rankings", icon: Trophy },
-  { href: "/achievements", label: "Achievements", icon: Award },
-  { href: "/profile", label: "Profile", icon: User },
+  { href: "/home", label: "Início", icon: Home },
+  { href: "/matches", label: "Partidas", icon: Calendar },
+  { href: "/rankings", label: "Classificação", icon: Trophy },
+  { href: "/achievements", label: "Conquistas", icon: Award },
+  { href: "/profile", label: "Perfil", icon: User },
 ] as const;
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around border-t bg-background">
+    <nav className="bg-background fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t md:hidden">
       {NAV_LINKS.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href;
 
@@ -28,7 +28,7 @@ export function BottomNav() {
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex flex-col items-center gap-1 p-2 text-xs text-muted-foreground",
+              "text-muted-foreground flex flex-col items-center gap-1 p-2 text-xs",
               isActive && "text-primary",
             )}
           >

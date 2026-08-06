@@ -7,11 +7,11 @@ import { Award, Calendar, Home, Trophy, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { href: "/home", label: "Home", icon: Home },
-  { href: "/matches", label: "Matches", icon: Calendar },
-  { href: "/rankings", label: "Rankings", icon: Trophy },
-  { href: "/achievements", label: "Achievements", icon: Award },
-  { href: "/profile", label: "Profile", icon: User },
+  { href: "/home", label: "Início", icon: Home },
+  { href: "/matches", label: "Partidas", icon: Calendar },
+  { href: "/rankings", label: "Classificação", icon: Trophy },
+  { href: "/achievements", label: "Conquistas", icon: Award },
+  { href: "/profile", label: "Perfil", icon: User },
 ] as const;
 
 export function Sidebar() {
@@ -28,7 +28,7 @@ export function Sidebar() {
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+              "text-muted-foreground hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               isActive && "bg-accent text-accent-foreground",
             )}
           >

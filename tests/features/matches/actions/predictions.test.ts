@@ -38,7 +38,7 @@ describe("submitPrediction", () => {
       predictedHomeScore: -1,
     });
 
-    expect(result).toEqual({ ok: false, error: "invalid input" });
+    expect(result).toEqual({ ok: false, error: "entrada inválida" });
     expect(getCurrentFirebaseUidMock).not.toHaveBeenCalled();
     expect(upsertPredictionMock).not.toHaveBeenCalled();
   });
@@ -46,7 +46,7 @@ describe("submitPrediction", () => {
   it("rejects a non-uuid matchId", async () => {
     const result = await submitPrediction({ ...INPUT, matchId: "match-1" });
 
-    expect(result).toEqual({ ok: false, error: "invalid input" });
+    expect(result).toEqual({ ok: false, error: "entrada inválida" });
     expect(upsertPredictionMock).not.toHaveBeenCalled();
   });
 
@@ -55,7 +55,7 @@ describe("submitPrediction", () => {
 
     const result = await submitPrediction(INPUT);
 
-    expect(result).toEqual({ ok: false, error: "not authenticated" });
+    expect(result).toEqual({ ok: false, error: "não autenticado" });
     expect(upsertPredictionMock).not.toHaveBeenCalled();
   });
 
@@ -65,7 +65,7 @@ describe("submitPrediction", () => {
 
     const result = await submitPrediction(INPUT);
 
-    expect(result).toEqual({ ok: false, error: "not authenticated" });
+    expect(result).toEqual({ ok: false, error: "não autenticado" });
     expect(upsertPredictionMock).not.toHaveBeenCalled();
   });
 
@@ -89,7 +89,7 @@ describe("submitPrediction", () => {
   it("rejects a wageredAmount <= 0 before checking auth or calling the service", async () => {
     const result = await submitPrediction({ ...INPUT, wageredAmount: 0 });
 
-    expect(result).toEqual({ ok: false, error: "invalid input" });
+    expect(result).toEqual({ ok: false, error: "entrada inválida" });
     expect(getCurrentFirebaseUidMock).not.toHaveBeenCalled();
     expect(upsertPredictionMock).not.toHaveBeenCalled();
   });
@@ -116,11 +116,11 @@ describe("submitPrediction", () => {
     resolveUserIdMock.mockResolvedValue("user-1");
     upsertPredictionMock.mockResolvedValue({
       ok: false,
-      error: "match already started",
+      error: "partida já começou",
     });
 
     const result = await submitPrediction(INPUT);
 
-    expect(result).toEqual({ ok: false, error: "match already started" });
+    expect(result).toEqual({ ok: false, error: "partida já começou" });
   });
 });

@@ -30,19 +30,19 @@ export default async function ProfilePage() {
           icon={Trophy}
           iconClassName="bg-indigo-100 text-indigo-600"
           value={`${stats.level}`}
-          label="Level"
+          label="Nível"
         />
         <StatCard
           icon={Target}
           iconClassName="bg-emerald-100 text-emerald-600"
           value={`${stats.accuracyPercent}%`}
-          label="Accuracy"
+          label="Precisão"
         />
         <StatCard
           icon={Flame}
           iconClassName="bg-amber-100 text-amber-600"
           value={`${stats.currentStreak} dias`}
-          label="Current Streak"
+          label="Sequência Atual"
         />
       </div>
 

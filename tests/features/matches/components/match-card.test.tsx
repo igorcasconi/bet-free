@@ -47,7 +47,7 @@ describe("MatchCard", () => {
     render(<MatchCard match={baseMatch} onPredict={vi.fn()} />);
 
     expect(screen.getByText("Sem palpite")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Predict" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Palpitar" })).toBeEnabled();
   });
 
   it("shows 'Palpite feito' and an enabled Editar palpite CTA when a prediction exists", () => {
@@ -86,7 +86,7 @@ describe("MatchCard", () => {
     const onPredict = vi.fn();
     render(<MatchCard match={baseMatch} onPredict={onPredict} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Predict" }));
+    fireEvent.click(screen.getByRole("button", { name: "Palpitar" }));
 
     expect(onPredict).toHaveBeenCalledWith(baseMatch);
   });

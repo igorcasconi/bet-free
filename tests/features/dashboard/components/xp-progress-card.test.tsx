@@ -12,7 +12,7 @@ describe("XpProgressCard", () => {
     render(<XpProgressCard level={3} xpInLevel={40} xpToNextLevel={100} />);
 
     expect(screen.getByText("40 / 100")).toBeInTheDocument();
-    expect(screen.getByText("60 XP to level 4")).toBeInTheDocument();
+    expect(screen.getByText("60 XP para o nível 4")).toBeInTheDocument();
   });
 
   it("renders a progress bar width proportional to xpInLevel / xpToNextLevel", () => {

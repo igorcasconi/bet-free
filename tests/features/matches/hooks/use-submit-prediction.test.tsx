@@ -102,7 +102,7 @@ describe("useSubmitPrediction", () => {
   it("does not patch the cache or refresh the router when the mutation returns a business failure", async () => {
     submitPredictionMock.mockResolvedValue({
       ok: false,
-      error: "match already started",
+      error: "partida já começou",
     });
     const { wrapper, queryClient } = createWrapper();
 

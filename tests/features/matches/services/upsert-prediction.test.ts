@@ -132,7 +132,7 @@ describe("upsertPrediction", () => {
 
     const result = await upsertPrediction(INPUT);
 
-    expect(result).toEqual({ ok: false, error: "match already started" });
+    expect(result).toEqual({ ok: false, error: "partida já começou" });
     expect(upsertMock).not.toHaveBeenCalled();
   });
 

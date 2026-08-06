@@ -38,7 +38,7 @@ export function MatchCard({ match, onPredict }: MatchCardProps) {
   const predictionStatus = predictionStatusFor(match);
   const statusBadge = STATUS_BADGE[match.status];
   const ctaLabel =
-    predictionStatus === "predicted" ? "Editar palpite" : "Predict";
+    predictionStatus === "predicted" ? "Editar palpite" : "Palpitar";
 
   return (
     <Card>

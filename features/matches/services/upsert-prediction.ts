@@ -23,7 +23,7 @@ export async function upsertPrediction(
   if (matchError) throw matchError;
 
   if (!match || match.status !== "scheduled") {
-    return { ok: false, error: "match already started" };
+    return { ok: false, error: "partida já começou" };
   }
 
   const { error } = await supabaseAdmin.from("predictions").upsert(

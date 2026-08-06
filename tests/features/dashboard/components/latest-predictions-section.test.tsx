@@ -12,7 +12,7 @@ describe("LatestPredictionsSection", () => {
   it("renders an empty state without erroring when there are no predictions", () => {
     render(<LatestPredictionsSection predictions={[]} />);
 
-    expect(screen.getByText(/no predictions yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/nenhum palpite ainda/i)).toBeInTheDocument();
   });
 
   it("renders each prediction when the list has items", () => {

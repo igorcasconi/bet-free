@@ -20,7 +20,7 @@ export function XpProgressCard({
     <Card>
       <CardContent className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Level {level}</span>
+          <span className="text-sm font-medium">Nível {level}</span>
           <span className="text-muted-foreground text-sm">
             {xpInLevel} / {xpToNextLevel}
           </span>
@@ -36,7 +36,7 @@ export function XpProgressCard({
           />
         </div>
         <span className="text-muted-foreground text-sm">
-          {xpToNextLevel - xpInLevel} XP to level {level + 1}
+          {xpToNextLevel - xpInLevel} XP para o nível {level + 1}
         </span>
       </CardContent>
     </Card>

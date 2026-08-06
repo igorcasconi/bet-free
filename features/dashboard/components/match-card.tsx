@@ -9,7 +9,7 @@ interface MatchCardProps {
 }
 
 function formatMatchTime(matchDate: string): string {
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(matchDate));
@@ -43,7 +43,7 @@ export function MatchCard({ match }: MatchCardProps) {
           </div>
         </div>
         <Button className="w-full" disabled>
-          Make Prediction
+          Fazer Palpite
         </Button>
       </CardContent>
     </Card>

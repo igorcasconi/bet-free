@@ -25,19 +25,19 @@ export default async function HomePage() {
           icon={Flame}
           iconClassName="bg-amber-100 text-amber-600"
           value={`${stats.currentStreak} dias`}
-          label="Current Streak"
+          label="Sequência Atual"
         />
         <StatCard
           icon={Target}
           iconClassName="bg-emerald-100 text-emerald-600"
           value={`${stats.accuracyPercent}%`}
-          label="Accuracy"
+          label="Precisão"
         />
         <StatCard
           icon={Trophy}
           iconClassName="bg-indigo-100 text-indigo-600"
           value={`${stats.level}`}
-          label="Level"
+          label="Nível"
         />
       </div>
 
@@ -48,15 +48,15 @@ export default async function HomePage() {
       />
 
       <MatchListSection
-        title="Today's Matches"
+        title="Partidas de Hoje"
         matches={todayMatches}
-        emptyMessage="No matches today"
+        emptyMessage="Nenhuma partida hoje"
       />
 
       <MatchListSection
-        title="Upcoming Matches"
+        title="Próximas Partidas"
         matches={upcomingMatches}
-        emptyMessage="No upcoming matches"
+        emptyMessage="Nenhuma partida futura"
       />
 
       <LatestPredictionsSection predictions={latestPredictions} />

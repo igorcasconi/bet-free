@@ -23,6 +23,6 @@ describe("MoneyPreservedCard", () => {
   it("renders the 'Money Preserved' badge", () => {
     render(<MoneyPreservedCard amount={100} />);
 
-    expect(screen.getByText("Money Preserved")).toBeInTheDocument();
+    expect(screen.getByText("Dinheiro Poupado")).toBeInTheDocument();
   });
 });

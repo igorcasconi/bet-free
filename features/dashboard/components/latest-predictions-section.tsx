@@ -11,7 +11,7 @@ export function LatestPredictionsSection({
   if (predictions.length === 0) {
     return (
       <Card className="text-muted-foreground items-center justify-center px-6 py-8 text-center">
-        No predictions yet
+        Nenhum palpite ainda
       </Card>
     );
   }

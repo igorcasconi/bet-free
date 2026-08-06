@@ -127,7 +127,7 @@ describe("PredictDialog", () => {
   it("keeps the dialog open and shows the error on a failed submit", async () => {
     mutateAsyncMock.mockResolvedValue({
       ok: false,
-      error: "match already started",
+      error: "partida já começou",
     });
     const onOpenChange = vi.fn();
 
@@ -144,7 +144,7 @@ describe("PredictDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
 
     await waitFor(() => {
-      expect(screen.getByText("match already started")).toBeInTheDocument();
+      expect(screen.getByText("partida já começou")).toBeInTheDocument();
     });
     expect(onOpenChange).not.toHaveBeenCalled();
   });
