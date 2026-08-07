@@ -7,8 +7,11 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/login")).toBe(true);
   });
 
+  it("treats / as public", () => {
+    expect(isPublicPath("/")).toBe(true);
+  });
+
   it("treats other paths as protected", () => {
-    expect(isPublicPath("/")).toBe(false);
     expect(isPublicPath("/dashboard")).toBe(false);
   });
 });
@@ -26,15 +29,27 @@ describe("decideRedirect", () => {
     ).toEqual({ action: "redirect", to: "/login?redirect=%2Fdashboard" });
   });
 
-  it("/login + valid session → redirect to /", () => {
+  it("/login + valid session → redirect to /home", () => {
     expect(
       decideRedirect({ pathname: "/login", hasValidSession: true }),
-    ).toEqual({ action: "redirect", to: "/" });
+    ).toEqual({ action: "redirect", to: "/home" });
   });
 
   it("/login + invalid session → next", () => {
     expect(
       decideRedirect({ pathname: "/login", hasValidSession: false }),
     ).toEqual({ action: "next" });
+  });
+
+  it("/ + invalid session → next", () => {
+    expect(
+      decideRedirect({ pathname: "/", hasValidSession: false }),
+    ).toEqual({ action: "next" });
+  });
+
+  it("/ + valid session → redirect to /home", () => {
+    expect(
+      decideRedirect({ pathname: "/", hasValidSession: true }),
+    ).toEqual({ action: "redirect", to: "/home" });
   });
 });

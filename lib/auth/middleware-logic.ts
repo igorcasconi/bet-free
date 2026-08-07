@@ -1,4 +1,4 @@
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/"];
 
 export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.includes(pathname);
@@ -16,7 +16,9 @@ export function decideRedirect({
   hasValidSession: boolean;
 }): MiddlewareDecision {
   if (isPublicPath(pathname)) {
-    return hasValidSession ? { action: "redirect", to: "/" } : { action: "next" };
+    return hasValidSession
+      ? { action: "redirect", to: "/home" }
+      : { action: "next" };
   }
 
   if (hasValidSession) {
