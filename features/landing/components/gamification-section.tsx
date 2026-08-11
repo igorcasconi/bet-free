@@ -5,7 +5,7 @@ import { MOCK_LANDING_STATS } from "@/features/landing/constants/mock-stats";
 
 export function GamificationSection() {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 px-18">
       <div className="grid gap-4 sm:grid-cols-2">
         <StatCard
           icon={Flame}

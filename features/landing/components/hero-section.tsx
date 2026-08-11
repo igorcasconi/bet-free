@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   return (
-    <section className="flex flex-col items-center gap-8 px-6 py-16 text-center md:flex-row md:text-left">
+    <section className="flex flex-col items-center gap-8 bg-linear-to-r from-green-400 to-blue-500 px-18 py-16 text-center md:flex-row md:text-left">
       <div className="flex flex-1 flex-col items-center gap-4 md:items-start">
         <h1 className="text-3xl font-bold md:text-5xl">
-          Transforme o impulso de apostar em previsões grátis e gamificadas
+          Seu amor pelo futebol não precisa custar seu dinheiro.
         </h1>
-        <p className="text-muted-foreground text-lg">
-          Sinta a emoção do palpite sem arriscar seu dinheiro: preveja
-          resultados, ganhe XP e acompanhe quanto você deixou de perder.
+        <p className="text-lg text-zinc-950">
+          Você pode continuar acompanhando cada jogo, fazendo seus palpites e
+          torcendo — sem colocar seu dinheiro em risco.
         </p>
         <Button asChild size="lg">
-          <Link href="/login">Acessar a plataforma</Link>
+          <Link href="/login">Começar gratuitamente</Link>
         </Button>
       </div>
       <div className="flex-1">

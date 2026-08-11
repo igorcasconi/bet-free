@@ -20,7 +20,7 @@ const STEPS: Step[] = [
     icon: Target,
     title: "Palpite grátis em jogos reais",
     description:
-      "Dê seu palpite em partidas reais sem gastar um centavo — zero risco, zero aposta.",
+      "Escolha seu palpite, acompanhe a partida e deixe o dinheiro fora do jogo.",
   },
   {
     icon: Trophy,
@@ -32,13 +32,13 @@ const STEPS: Step[] = [
     icon: PiggyBank,
     title: "Veja o dinheiro preservado",
     description:
-      "Acompanhe quanto você deixou de apostar e preservou, palpite após palpite.",
+      "Cada palpite sem dinheiro real é uma escolha a favor de você. Veja quanto já preservou.",
   },
 ];
 
 export function HowItWorksSection() {
   return (
-    <section className="flex flex-col gap-8">
+    <section className="flex flex-col gap-8 px-18">
       <div className="flex flex-col items-center gap-2 text-center">
         <h2 className="text-2xl font-semibold">Como funciona</h2>
         <p className="text-muted-foreground">
@@ -50,7 +50,7 @@ export function HowItWorksSection() {
         {STEPS.map(({ icon: Icon, title, description }) => (
           <Card key={title}>
             <CardHeader>
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-full">
                 <Icon className="size-5" aria-hidden="true" />
               </div>
               <CardTitle>{title}</CardTitle>
