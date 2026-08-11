@@ -11,7 +11,7 @@ export function FinalCtaSection() {
       <p className="text-md text-zinc-950">
         Faça seu próximo palpite sem colocar seu dinheiro em jogo.
       </p>
-      <p className="text-md my-[-20px] mb-2 text-zinc-950">
+      <p className="text-md -my-5 mb-2 text-zinc-950">
         Seu dinheiro é seu. O futebol pode continuar sendo diversão.
       </p>
       <Button asChild size="lg">

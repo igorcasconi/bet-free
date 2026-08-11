@@ -32,11 +32,11 @@ function LoginPageContent() {
         <SignUpForm redirectTo={redirectTo} />
       )}
 
-      <GoogleLoginButton redirectTo={redirectTo} />
+      {/* <GoogleLoginButton redirectTo={redirectTo} /> */}
 
       <button
         type="button"
-        className="w-full text-center text-sm text-zinc-600 underline-offset-4 hover:underline dark:text-zinc-400"
+        className="w-full cursor-pointer text-center text-sm text-white underline-offset-4 hover:underline dark:text-zinc-400"
         onClick={() => setMode(mode === "login" ? "sign-up" : "login")}
       >
         {mode === "login"
