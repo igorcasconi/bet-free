@@ -9,19 +9,24 @@ interface MatchCardProps {
 }
 
 function formatMatchTime(matchDate: string): string {
-  return new Intl.DateTimeFormat("pt-BR", {
+  const time = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(matchDate));
+
+  return `${time}`;
 }
 
 export function MatchCard({ match }: MatchCardProps) {
   return (
-    <Card>
+    <Card background="bg-linear-to-r from-green-400 to-blue-500">
       <CardHeader>
         <div className="flex items-center justify-between">
           <Badge variant="secondary">{match.competitionName}</Badge>
-          <span className="text-muted-foreground text-sm">
+          <span className="text-sm text-white">
             {formatMatchTime(match.matchDate)}
           </span>
         </div>
@@ -29,22 +34,20 @@ export function MatchCard({ match }: MatchCardProps) {
       <CardContent>
         <div className="flex items-center justify-between gap-4">
           <div className="flex flex-col items-center gap-1">
-            <Avatar>
+            <Avatar size="lg">
               <AvatarFallback>{match.homeTeamShort}</AvatarFallback>
             </Avatar>
             <span className="text-sm">{match.homeTeamName}</span>
           </div>
           <span className="text-muted-foreground text-sm">vs</span>
           <div className="flex flex-col items-center gap-1">
-            <Avatar>
+            <Avatar size="lg">
               <AvatarFallback>{match.awayTeamShort}</AvatarFallback>
             </Avatar>
             <span className="text-sm">{match.awayTeamName}</span>
           </div>
         </div>
-        <Button className="w-full" disabled>
-          Fazer Palpite
-        </Button>
+        <Button className="mt-8 w-full">Fazer Palpite</Button>
       </CardContent>
     </Card>
   );

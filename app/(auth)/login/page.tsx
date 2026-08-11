@@ -3,12 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-import {
-  LoginForm,
-  SignUpForm,
-  GoogleLoginButton,
-  useLoginWithGoogle,
-} from "@/features/auth";
+import { LoginForm, SignUpForm, useLoginWithGoogle } from "@/features/auth";
 
 function LoginPageContent() {
   const searchParams = useSearchParams();
