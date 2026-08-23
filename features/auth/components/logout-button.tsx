@@ -9,8 +9,9 @@ export function LogoutButton() {
   return (
     <Button
       type="button"
-      variant="ghost"
+      variant="default"
       disabled={isPending}
+      className="bg-red-500"
       onClick={() => mutate()}
     >
       Sair

@@ -22,7 +22,7 @@ function formatMatchTime(matchDate: string): string {
 
 export function MatchCard({ match }: MatchCardProps) {
   return (
-    <Card background="bg-linear-to-r from-green-400 to-blue-500">
+    <Card background="bg-linear-to-r from-blue-300 to-blue-500">
       <CardHeader>
         <div className="flex items-center justify-between">
           <Badge variant="secondary">{match.competitionName}</Badge>
@@ -47,7 +47,9 @@ export function MatchCard({ match }: MatchCardProps) {
             <span className="text-sm">{match.awayTeamName}</span>
           </div>
         </div>
-        <Button className="mt-8 w-full">Fazer Palpite</Button>
+        <Button className="text-primary mt-8 w-full cursor-pointer bg-green-400 hover:bg-green-500/40">
+          Palpitar
+        </Button>
       </CardContent>
     </Card>
   );

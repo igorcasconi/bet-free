@@ -41,12 +41,12 @@ export function MatchCard({ match, onPredict }: MatchCardProps) {
     predictionStatus === "predicted" ? "Editar palpite" : "Palpitar";
 
   return (
-    <Card>
+    <Card background="bg-linear-to-r from-blue-300 to-blue-500">
       <CardHeader>
         <div className="flex items-center justify-between">
           <Badge variant="secondary">{match.competitionName}</Badge>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-sm">
+            <span className="text-sm text-white">
               {formatKickoffTime(match.matchDate)}
             </span>
             <Badge variant={statusBadge.variant}>{statusBadge.label}</Badge>
@@ -70,12 +70,12 @@ export function MatchCard({ match, onPredict }: MatchCardProps) {
           </div>
         </div>
         {predictionStatus !== "locked" && (
-          <Badge variant="outline" className="self-start">
+          <Badge variant="outline" className="self-start bg-amber-200">
             {PREDICTION_BADGE_LABEL[predictionStatus]}
           </Badge>
         )}
         <Button
-          className="w-full"
+          className="text-primary w-full cursor-pointer bg-green-400 hover:bg-green-500/40"
           disabled={predictionStatus === "locked"}
           onClick={() => onPredict(match)}
         >

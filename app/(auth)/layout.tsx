@@ -6,7 +6,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 bg-linear-to-r from-green-400 to-blue-500 px-4 py-12">
+    <div className="flex flex-1 items-center justify-center bg-zinc-50 bg-linear-to-r from-green-400 to-blue-500 px-4 py-12 max-lg:flex-row max-sm:flex-col">
       <div className="mr-10 max-w-lg items-center">
         <Image
           src="/bet-free-images/saved-illustration.png"
@@ -26,7 +26,9 @@ export default function AuthLayout({
           </p>
         </div>
       </div>
-      <div className="mt-30 w-full max-w-sm space-y-6">{children}</div>
+      <div className="w-full max-w-sm space-y-6 max-xl:mt-30 max-sm:mt-20">
+        {children}
+      </div>
     </div>
   );
 }

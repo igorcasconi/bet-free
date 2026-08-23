@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useReducer, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { MatchGroupSection } from "@/features/matches/components/match-group-section";
@@ -11,6 +11,7 @@ import type {
   MatchGroup,
   UpcomingMatchesPage,
 } from "@/features/matches/types";
+import { useRouter } from "next/navigation";
 
 // SPEC_DEVIATION: design.md's MatchesPageContent interface only listed
 // `todayGroups`, but `useUpcomingMatches` requires an explicit initial page
@@ -32,6 +33,8 @@ export function MatchesPageContent({
     useUpcomingMatches(upcomingPage);
 
   const upcomingGroups = data?.pages.flatMap((page) => page.groups) ?? [];
+
+  console.log(selectedMatch, "<<<");
 
   return (
     <div className="flex flex-col gap-8">
