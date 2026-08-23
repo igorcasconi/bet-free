@@ -165,9 +165,11 @@ describe("getDashboardData", () => {
             {
               id: "match-today",
               match_date: "2026-07-26T15:00:00.000Z",
-              competitions: { name: "Brasileirão" },
+              status: "scheduled",
+              competitions: { id: "comp-1", name: "Brasileirão" },
               home_team: { name: "Flamengo" },
               away_team: { name: "Palmeiras" },
+              predictions: [],
             },
           ],
           error: null,
@@ -177,9 +179,11 @@ describe("getDashboardData", () => {
             {
               id: "match-upcoming",
               match_date: "2026-08-01T15:00:00.000Z",
-              competitions: { name: "Brasileirão" },
+              status: "scheduled",
+              competitions: { id: "comp-1", name: "Brasileirão" },
               home_team: { name: "Corinthians" },
               away_team: { name: "Santos" },
+              predictions: [],
             },
           ],
           error: null,
@@ -192,27 +196,72 @@ describe("getDashboardData", () => {
     expect(result.todayMatches).toEqual([
       {
         id: "match-today",
+        competitionId: "comp-1",
         competitionName: "Brasileirão",
         matchDate: "2026-07-26T15:00:00.000Z",
+        status: "scheduled",
         homeTeamName: "Flamengo",
         homeTeamShort: "FLA",
         awayTeamName: "Palmeiras",
         awayTeamShort: "PAL",
-        hasPrediction: false,
+        prediction: null,
       },
     ]);
     expect(result.upcomingMatches).toEqual([
       {
         id: "match-upcoming",
+        competitionId: "comp-1",
         competitionName: "Brasileirão",
         matchDate: "2026-08-01T15:00:00.000Z",
+        status: "scheduled",
         homeTeamName: "Corinthians",
         homeTeamShort: "COR",
         awayTeamName: "Santos",
         awayTeamShort: "SAN",
-        hasPrediction: false,
+        prediction: null,
       },
     ]);
+  });
+
+  it("maps a prediction matching the resolved user id onto the match", async () => {
+    setupTables({
+      users: {
+        data: { id: "user-1", money_saved: 0, current_streak: 0, xp: 0 },
+        error: null,
+      },
+      matches: [
+        {
+          data: [
+            {
+              id: "match-today",
+              match_date: "2026-07-26T15:00:00.000Z",
+              status: "scheduled",
+              competitions: { id: "comp-1", name: "Brasileirão" },
+              home_team: { name: "Flamengo" },
+              away_team: { name: "Palmeiras" },
+              predictions: [
+                {
+                  id: "pred-today",
+                  predicted_home_score: 2,
+                  predicted_away_score: 0,
+                  user_id: "user-1",
+                },
+              ],
+            },
+          ],
+          error: null,
+        },
+        EMPTY,
+      ],
+    });
+
+    const result = await getDashboardData("uid-1");
+
+    expect(result.todayMatches[0]?.prediction).toEqual({
+      id: "pred-today",
+      predictedHomeScore: 2,
+      predictedAwayScore: 0,
+    });
   });
 
   it("renders an empty state (no rows, no error) when there are no matches", async () => {

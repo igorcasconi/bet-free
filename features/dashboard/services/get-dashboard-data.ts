@@ -1,24 +1,18 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type {
   DashboardData,
-  DashboardMatch,
   DashboardPrediction,
 } from "@/features/dashboard/types";
+import {
+  MATCH_SELECT,
+  toMatchCardData,
+  type MatchCardData,
+  type MatchRow,
+} from "@/features/matches";
 import { XP_THRESHOLD, levelForXp, xpInLevelForXp } from "@/lib/gamification";
 import { getAccuracyPercent } from "@/lib/predictions/accuracy";
 
 const LATEST_PREDICTIONS_LIMIT = 5;
-
-const MATCH_SELECT =
-  "id, match_date, competitions(name), home_team:teams!matches_home_team_id_fkey(name), away_team:teams!matches_away_team_id_fkey(name)";
-
-interface MatchRow {
-  id: string;
-  match_date: string;
-  competitions: { name: string } | null;
-  home_team: { name: string } | null;
-  away_team: { name: string } | null;
-}
 
 interface PredictionRow {
   id: string;
@@ -30,26 +24,6 @@ interface PredictionRow {
     home_team: { name: string } | null;
     away_team: { name: string } | null;
   } | null;
-}
-
-function shortNameFor(name: string): string {
-  return name.slice(0, 3).toUpperCase();
-}
-
-function toDashboardMatch(row: MatchRow): DashboardMatch {
-  const homeTeamName = row.home_team?.name ?? "";
-  const awayTeamName = row.away_team?.name ?? "";
-
-  return {
-    id: row.id,
-    competitionName: row.competitions?.name ?? "",
-    matchDate: row.match_date,
-    homeTeamName,
-    homeTeamShort: shortNameFor(homeTeamName),
-    awayTeamName,
-    awayTeamShort: shortNameFor(awayTeamName),
-    hasPrediction: false,
-  };
 }
 
 function getUtcDayBounds(): { startOfToday: string; endOfToday: string } {
@@ -65,9 +39,9 @@ function getUtcDayBounds(): { startOfToday: string; endOfToday: string } {
   };
 }
 
-async function getTodayAndUpcomingMatches(): Promise<{
-  todayMatches: DashboardMatch[];
-  upcomingMatches: DashboardMatch[];
+async function fetchTodayAndUpcomingMatchRows(): Promise<{
+  todayRows: MatchRow[];
+  upcomingRows: MatchRow[];
 }> {
   const { startOfToday, endOfToday } = getUtcDayBounds();
 
@@ -89,12 +63,18 @@ async function getTodayAndUpcomingMatches(): Promise<{
   if (upcomingResult.error) throw upcomingResult.error;
 
   return {
-    todayMatches: ((todayResult.data ?? []) as unknown as MatchRow[]).map(
-      toDashboardMatch,
-    ),
-    upcomingMatches: ((upcomingResult.data ?? []) as unknown as MatchRow[]).map(
-      toDashboardMatch,
-    ),
+    todayRows: (todayResult.data ?? []) as unknown as MatchRow[],
+    upcomingRows: (upcomingResult.data ?? []) as unknown as MatchRow[],
+  };
+}
+
+function toTodayAndUpcomingMatches(
+  { todayRows, upcomingRows }: { todayRows: MatchRow[]; upcomingRows: MatchRow[] },
+  userId: string | null,
+): { todayMatches: MatchCardData[]; upcomingMatches: MatchCardData[] } {
+  return {
+    todayMatches: todayRows.map((row) => toMatchCardData(row, userId)),
+    upcomingMatches: upcomingRows.map((row) => toMatchCardData(row, userId)),
   };
 }
 
@@ -135,7 +115,7 @@ function zeroStats(): DashboardData["stats"] {
 export async function getDashboardData(
   firebaseUid: string | null,
 ): Promise<DashboardData> {
-  const [userResult, { todayMatches, upcomingMatches }] = await Promise.all([
+  const [userResult, matchRows] = await Promise.all([
     firebaseUid
       ? supabaseAdmin
           .from("users")
@@ -143,7 +123,7 @@ export async function getDashboardData(
           .eq("firebase_uid", firebaseUid)
           .maybeSingle()
       : Promise.resolve(null),
-    getTodayAndUpcomingMatches(),
+    fetchTodayAndUpcomingMatchRows(),
   ]);
 
   if (userResult?.error) throw userResult.error;
@@ -151,6 +131,11 @@ export async function getDashboardData(
   const user = userResult?.data ?? null;
 
   if (!user) {
+    const { todayMatches, upcomingMatches } = toTodayAndUpcomingMatches(
+      matchRows,
+      null,
+    );
+
     return {
       stats: zeroStats(),
       todayMatches,
@@ -158,6 +143,11 @@ export async function getDashboardData(
       latestPredictions: [],
     };
   }
+
+  const { todayMatches, upcomingMatches } = toTodayAndUpcomingMatches(
+    matchRows,
+    user.id,
+  );
 
   const [accuracyPercent, latestPredictions] = await Promise.all([
     getAccuracyPercent(user.id),

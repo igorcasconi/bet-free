@@ -2,3 +2,8 @@ export * from "./types";
 export * from "./services/get-matches-page-data";
 export * from "./services/get-upcoming-matches-page";
 export * from "./components/matches-page-content";
+export * from "./components/predict-dialog";
+export * from "./hooks/use-submit-prediction";
+export * from "./actions/predictions";
+export * from "./lib/prediction-status";
+export * from "./services/_shared";

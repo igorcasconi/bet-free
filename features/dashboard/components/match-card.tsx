@@ -2,11 +2,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { DashboardMatch } from "@/features/dashboard/types";
+import { predictionStatusFor } from "@/features/matches/lib/prediction-status";
+import type { MatchCardData } from "@/features/matches/types";
 
 interface MatchCardProps {
-  match: DashboardMatch;
+  match: MatchCardData;
+  onPredict: (match: MatchCardData) => void;
 }
+
+const PREDICTION_BADGE_LABEL: Record<"no-prediction" | "predicted", string> = {
+  "no-prediction": "Sem palpite",
+  predicted: "Palpite feito",
+};
 
 function formatMatchTime(matchDate: string): string {
   const time = new Intl.DateTimeFormat("pt-BR", {
@@ -20,7 +27,10 @@ function formatMatchTime(matchDate: string): string {
   return `${time}`;
 }
 
-export function MatchCard({ match }: MatchCardProps) {
+export function MatchCard({ match, onPredict }: MatchCardProps) {
+  const predictionStatus = predictionStatusFor(match);
+  const ctaLabel = predictionStatus === "predicted" ? "Editar palpite" : "Palpitar";
+
   return (
     <Card background="bg-linear-to-r from-blue-300 to-blue-500">
       <CardHeader>
@@ -47,8 +57,17 @@ export function MatchCard({ match }: MatchCardProps) {
             <span className="text-sm">{match.awayTeamName}</span>
           </div>
         </div>
-        <Button className="text-primary mt-8 w-full cursor-pointer bg-green-400 hover:bg-green-500/40">
-          Palpitar
+        {predictionStatus !== "locked" && (
+          <Badge variant="outline" className="mt-4">
+            {PREDICTION_BADGE_LABEL[predictionStatus]}
+          </Badge>
+        )}
+        <Button
+          className="text-primary mt-4 w-full cursor-pointer bg-green-400 hover:bg-green-500/40"
+          disabled={predictionStatus === "locked"}
+          onClick={() => onPredict(match)}
+        >
+          {ctaLabel}
         </Button>
       </CardContent>
     </Card>

@@ -4,5 +4,6 @@ export * from "./components/money-preserved-card";
 export * from "./components/stat-card";
 export * from "./components/xp-progress-card";
 export * from "./components/match-list-section";
+export * from "./components/match-list-section-client";
 export * from "./components/latest-predictions-section";
 export * from "./components/prediction-results-tracker";

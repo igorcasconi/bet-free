@@ -1,29 +1,33 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MatchListSection } from "@/features/dashboard/components/match-list-section";
-import type { DashboardMatch } from "@/features/dashboard/types";
+import type { MatchCardData } from "@/features/matches/types";
 
-const matches: DashboardMatch[] = [
+const matches: MatchCardData[] = [
   {
     id: "match-1",
+    competitionId: "comp-1",
     competitionName: "Premier League",
     matchDate: "2026-07-26T15:30:00.000Z",
+    status: "scheduled",
     homeTeamName: "Arsenal",
     homeTeamShort: "ARS",
     awayTeamName: "Chelsea",
     awayTeamShort: "CHE",
-    hasPrediction: false,
+    prediction: null,
   },
   {
     id: "match-2",
+    competitionId: "comp-2",
     competitionName: "La Liga",
     matchDate: "2026-07-26T18:00:00.000Z",
+    status: "scheduled",
     homeTeamName: "Barcelona",
     homeTeamShort: "BAR",
     awayTeamName: "Real Madrid",
     awayTeamShort: "RMA",
-    hasPrediction: false,
+    prediction: null,
   },
 ];
 
@@ -38,6 +42,7 @@ describe("MatchListSection", () => {
         title="Today's Matches"
         matches={matches}
         emptyMessage="No matches today"
+        onPredict={vi.fn()}
       />,
     );
 
@@ -54,6 +59,7 @@ describe("MatchListSection", () => {
         title="Today's Matches"
         matches={[]}
         emptyMessage="No matches today"
+        onPredict={vi.fn()}
       />,
     );
 

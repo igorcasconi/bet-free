@@ -1,3 +1,5 @@
+import type { MatchCardData } from "@/features/matches";
+
 export interface DashboardData {
   stats: {
     moneySaved: number;
@@ -7,20 +9,9 @@ export interface DashboardData {
     xpToNextLevel: number;
     accuracyPercent: number;
   };
-  todayMatches: DashboardMatch[];
-  upcomingMatches: DashboardMatch[];
+  todayMatches: MatchCardData[];
+  upcomingMatches: MatchCardData[];
   latestPredictions: DashboardPrediction[];
-}
-
-export interface DashboardMatch {
-  id: string;
-  competitionName: string;
-  matchDate: string;
-  homeTeamName: string;
-  homeTeamShort: string;
-  awayTeamName: string;
-  awayTeamShort: string;
-  hasPrediction: boolean;
 }
 
 export interface DashboardPrediction {

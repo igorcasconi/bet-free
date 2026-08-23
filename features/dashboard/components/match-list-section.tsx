@@ -1,18 +1,20 @@
 import Link from "next/link";
 
 import { MatchCard } from "@/features/dashboard/components/match-card";
-import type { DashboardMatch } from "@/features/dashboard/types";
+import type { MatchCardData } from "@/features/matches/types";
 
 interface MatchListSectionProps {
   title: string;
-  matches: DashboardMatch[];
+  matches: MatchCardData[];
   emptyMessage: string;
+  onPredict: (match: MatchCardData) => void;
 }
 
 export function MatchListSection({
   title,
   matches,
   emptyMessage,
+  onPredict,
 }: MatchListSectionProps) {
   return (
     <section className="flex flex-col gap-3">
@@ -27,7 +29,7 @@ export function MatchListSection({
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {matches.map((match) => (
-            <MatchCard key={match.id} match={match} />
+            <MatchCard key={match.id} match={match} onPredict={onPredict} />
           ))}
         </div>
       )}

@@ -3,7 +3,7 @@ import { Flame, Target, Trophy } from "lucide-react";
 import { getCurrentFirebaseUid } from "@/lib/auth/get-current-user";
 import {
   LatestPredictionsSection,
-  MatchListSection,
+  MatchListSectionClient,
   MoneyPreservedCard,
   PredictionResultsTracker,
   StatCard,
@@ -47,16 +47,9 @@ export default async function HomePage() {
         xpToNextLevel={stats.xpToNextLevel}
       />
 
-      <MatchListSection
-        title="Partidas de Hoje"
-        matches={todayMatches}
-        emptyMessage="Nenhuma partida hoje"
-      />
-
-      <MatchListSection
-        title="Próximas Partidas"
-        matches={upcomingMatches}
-        emptyMessage="Nenhuma partida futura"
+      <MatchListSectionClient
+        todayMatches={todayMatches}
+        upcomingMatches={upcomingMatches}
       />
 
       <LatestPredictionsSection predictions={latestPredictions} />
