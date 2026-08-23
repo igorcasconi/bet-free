@@ -113,6 +113,7 @@ export function PredictDialog({
                   </FormItem>
                 )}
               />
+              <span className="mt-4 text-white">vs</span>
               <FormField
                 control={form.control}
                 name="awayScore"
@@ -133,7 +134,11 @@ export function PredictDialog({
               </p>
             )}
             <DialogFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                className="cursor-pointer"
+                disabled={isPending}
+              >
                 Salvar
               </Button>
             </DialogFooter>

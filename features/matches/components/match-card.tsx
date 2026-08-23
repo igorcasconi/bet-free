@@ -37,8 +37,8 @@ function formatKickoffTime(matchDate: string): string {
 export function MatchCard({ match, onPredict }: MatchCardProps) {
   const predictionStatus = predictionStatusFor(match);
   const statusBadge = STATUS_BADGE[match.status];
-  const ctaLabel =
-    predictionStatus === "predicted" ? "Editar palpite" : "Palpitar";
+  const isPredicted = predictionStatus === "predicted";
+  const ctaLabel = isPredicted ? "Editar palpite" : "Palpitar";
 
   return (
     <Card background="bg-linear-to-r from-blue-300 to-blue-500">
@@ -55,22 +55,43 @@ export function MatchCard({ match, onPredict }: MatchCardProps) {
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-col items-center gap-1">
-            <Avatar>
-              <AvatarFallback>{match.homeTeamShort}</AvatarFallback>
-            </Avatar>
-            <span className="text-sm">{match.homeTeamName}</span>
+          <div className="flex items-center">
+            <div className="flex flex-col items-center gap-1">
+              <Avatar size="lg">
+                <AvatarFallback>{match.homeTeamShort}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm">{match.homeTeamName}</span>
+            </div>
+            {match.prediction !== null && (
+              <div className="ml-16">
+                <span className="text-xl text-white">
+                  {match.prediction?.predictedHomeScore}
+                </span>
+              </div>
+            )}
           </div>
-          <span className="text-muted-foreground text-sm">vs</span>
-          <div className="flex flex-col items-center gap-1">
-            <Avatar>
-              <AvatarFallback>{match.awayTeamShort}</AvatarFallback>
-            </Avatar>
-            <span className="text-sm">{match.awayTeamName}</span>
+          <span className="text-sm text-black">vs</span>
+          <div className="flex items-center">
+            {match.prediction !== null && (
+              <div className="mr-16">
+                <span className="text-xl text-white">
+                  {match.prediction?.predictedAwayScore}
+                </span>
+              </div>
+            )}
+            <div className="flex flex-col items-center gap-1">
+              <Avatar size="lg">
+                <AvatarFallback>{match.awayTeamShort}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm">{match.awayTeamName}</span>
+            </div>
           </div>
         </div>
         {predictionStatus !== "locked" && (
-          <Badge variant="outline" className="self-start bg-amber-200">
+          <Badge
+            variant="outline"
+            className={`self-start ${isPredicted ? "bg-green-400" : "bg-amber-200"}`}
+          >
             {PREDICTION_BADGE_LABEL[predictionStatus]}
           </Badge>
         )}
