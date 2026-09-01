@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { MatchGroupSection } from "@/features/matches/components/match-group-section";
@@ -11,12 +11,7 @@ import type {
   MatchGroup,
   UpcomingMatchesPage,
 } from "@/features/matches/types";
-import { useRouter } from "next/navigation";
 
-// SPEC_DEVIATION: design.md's MatchesPageContent interface only listed
-// `todayGroups`, but `useUpcomingMatches` requires an explicit initial page
-// (per its own design.md interface). Added `upcomingPage` so the hydrated
-// first page can reach the hook — there's no other way for it to get there.
 interface MatchesPageContentProps {
   todayGroups: MatchGroup[];
   upcomingPage: UpcomingMatchesPage;

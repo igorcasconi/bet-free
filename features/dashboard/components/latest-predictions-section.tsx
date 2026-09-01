@@ -5,6 +5,17 @@ interface LatestPredictionsSectionProps {
   predictions: DashboardPrediction[];
 }
 
+function formatCreatedAt(createdAt: string): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
+  }).format(new Date(createdAt));
+}
+
 export function LatestPredictionsSection({
   predictions,
 }: LatestPredictionsSectionProps) {
@@ -26,7 +37,7 @@ export function LatestPredictionsSection({
           <div>
             <p className="font-medium">{prediction.matchLabel}</p>
             <p className="text-muted-foreground text-sm">
-              {prediction.createdAt}
+              {formatCreatedAt(prediction.createdAt)}
             </p>
           </div>
           <p className="font-semibold">{prediction.predictedScore}</p>

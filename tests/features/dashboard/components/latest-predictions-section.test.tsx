@@ -21,14 +21,14 @@ describe("LatestPredictionsSection", () => {
         id: "1",
         matchLabel: "Flamengo vs Palmeiras",
         predictedScore: "2-1",
-        createdAt: "2026-07-20",
+        createdAt: "2026-07-20T15:00:00.000Z", // 12:00 in America/Sao_Paulo (UTC-3)
         pointsEarned: null,
       },
       {
         id: "2",
         matchLabel: "Corinthians vs Santos",
         predictedScore: "0-0",
-        createdAt: "2026-07-21",
+        createdAt: "2026-07-21T18:30:00.000Z", // 15:30 in America/Sao_Paulo (UTC-3)
         pointsEarned: null,
       },
     ];
@@ -37,10 +37,10 @@ describe("LatestPredictionsSection", () => {
 
     expect(screen.getByText("Flamengo vs Palmeiras")).toBeInTheDocument();
     expect(screen.getByText("2-1")).toBeInTheDocument();
-    expect(screen.getByText("2026-07-20")).toBeInTheDocument();
+    expect(screen.getByText("20/07/2026, 12:00")).toBeInTheDocument();
 
     expect(screen.getByText("Corinthians vs Santos")).toBeInTheDocument();
     expect(screen.getByText("0-0")).toBeInTheDocument();
-    expect(screen.getByText("2026-07-21")).toBeInTheDocument();
+    expect(screen.getByText("21/07/2026, 15:30")).toBeInTheDocument();
   });
 });

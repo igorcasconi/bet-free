@@ -2,10 +2,8 @@ import { Flame, Target, Trophy } from "lucide-react";
 
 import { getCurrentFirebaseUid } from "@/lib/auth/get-current-user";
 import {
-  LatestPredictionsSection,
   MatchListSectionClient,
   MoneyPreservedCard,
-  PredictionResultsTracker,
   StatCard,
   XpProgressCard,
   getDashboardData,
@@ -52,8 +50,8 @@ export default async function HomePage() {
         upcomingMatches={upcomingMatches}
       />
 
-      <LatestPredictionsSection predictions={latestPredictions} />
-      <PredictionResultsTracker predictions={latestPredictions} />
+      {/* <LatestPredictionsSection predictions={latestPredictions} />
+      <PredictionResultsTracker predictions={latestPredictions} /> */}
     </div>
   );
 }
